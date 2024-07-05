@@ -3,7 +3,7 @@
 model_path=$1
 n_frames=${2:-8}
 max_new_tokens=${3:-512}
-top_p=${4:-8}
+top_p=${4:-0.8}
 temperature=${5:-0}
 
 python3 -m tasks.demo_cli \
