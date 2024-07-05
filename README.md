@@ -74,17 +74,8 @@ Tarsier takes a simple sturcture that use a MLP projection layer to connect visu
 
 ### Two-stage Training
 Tarsier tasks a two-stage training strategy.
-1. Stage-1: Multi-task Pre-training
-  
-    In stage-1, we trained our model across:
-    - 10M diverse public datasets, such as video captioning, video question answering, action recognition, multi-image understanding, and text generation.
-    - 3.5M in-house data, including 2.4M high-quality video caption data similar to WebVid and 1.1M videos with object-tracking (processed on videos from Webvid and HD-VILA by object tracking tool: [DEVA](https://github.com/hkchengrex/Tracking-Anything-with-DEVA))
-2. Stage-2: Multi-grained Instruction Tuning
-
-    In stage-2, we use 500K of in-house instruction tuning data, including:
-    - Movie clips featuring multiple shots, subjects, or events, and had annotators provide descriptions varying in length and detail, from brief motion summaries to comprehensive narratives of visual details.
-    - A dataset rich in camera motions, including zooming, translating, panning, and rotating.
-    - Video-aware creative writing, such as poems, dialogues, speeches.
+- Stage-1: Multi-task Pre-training on 13M data
+- Stage-2: Multi-grained Instruction Tuning on 500K data
   
 In both stages, we freeze ViT and train all the parameters of projection layer and LLM.
 
