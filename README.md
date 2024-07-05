@@ -54,7 +54,7 @@ We have released the model, code, and data for inference, evaluation and depolym
 Please <a href="#citeus">cite us</a> if you found our work helpful. 
 <div align="center">
   <img src="assets/figures/chatbot-example.png" width = "100%">
-  <br>Figure 1: Example dialogue between a user and Tarsier. The input video is: <a href="https://github.com/bytedance/tarsier/assets/videos/coffee.gif">assets/videos/coffee.gif</a>
+  <br>Figure 1: Example dialogue between a user and Tarsier. The input video is: <a href="https://github.com/bytedance/tarsier/blob/main/assets/videos/coffee.gif">assets/videos/coffee.gif</a>
 </div>
 
 # Overview
@@ -90,7 +90,7 @@ In both stages, we freeze ViT and train all the parameters of projection layer a
 
 ### Video Description Evaluation
 #### Benchmark: DREAM-1K
-We proposed DREAM-1K as a challenging video description benchmark. It contrains a collection of 1,000 video clips with diverse complexities from five different origins: live-action movies, animated movies, stock videos, long YouTube videos, and TikTok-style short videos. We provide a fine-grained manual annotation for each video. See: [data/annotations/DREAM-1k.jsonl](https://github.com/bytedance/tarsier/data/annotations/DREAM-1k.jsonl)
+We proposed DREAM-1K as a challenging video description benchmark. It contrains a collection of 1,000 video clips with diverse complexities from five different origins: live-action movies, animated movies, stock videos, long YouTube videos, and TikTok-style short videos. We provide a fine-grained manual annotation for each video. See: [data/annotations/DREAM-1k.jsonl](https://github.com/bytedance/tarsier/blob/main/data/annotations/DREAM-1k.jsonl)
 <div align="center">
   <img src="assets/figures/dream-1k-statistics.png" width = "90%">
   <br>Figure 3: DREAM-1K data Statistics.
@@ -103,7 +103,7 @@ We propose AutoDQ as a more interpretable approach to automatic video descriptio
   <br>Figure 4: The AutoDQ workflow.</a>
 </div>
 
-The relative code is: [evaluation/metrics/evaluate_dream_gpt.py](https://github.com/bytedance/tarsier/evaluation/metrics/evaluate_dream_gpt.py)
+The relative code is: [evaluation/metrics/evaluate_dream_gpt.py](https://github.com/bytedance/tarsier/blob/main/evaluation/metrics/evaluate_dream_gpt.py)
 
 #### Evaluation Results
 We evaluate some advanced open-source video understanding models and two proprietary models (GPT-4V and Genmini 1.5 Pro) on DREAM-1K. The results are shown in Figure 5.
@@ -162,7 +162,7 @@ The result should be:
   
     Download Video from https://huggingface.co/datasets/omni-research/DREAM-1K.
 
-    We have preprocessed the metadata for all benchmarks we used, see: [data/annotations](https://github.com/bytedance/tarsier/data/annotations) But you need to change the _"\<placeholder\>"_ in the annotation file to your local video file path according to the _"vid"_. We provide an [example code](https://github.com/bytedance/tarsier/code/Tarsier/data/fill_in_video_file.ipynb) for processing DREAM-1K. You can refer to it when processing other benchmarks.
+    We have preprocessed the metadata for all benchmarks we used, see: [data/annotations](https://github.com/bytedance/tarsier/tree/main/data/annotations) But you need to change the _"\<placeholder\>"_ in the annotation file to your local video file path according to the _"vid"_. We provide an [example code](https://github.com/bytedance/tarsier/blob/main/data/fill_in_video_file.ipynb) for processing DREAM-1K. You can refer to it when processing other benchmarks.
 
 2. Other Benchmarks
     - Multi-choice VQA: [MVBench](https://huggingface.co/datasets/OpenGVLab/MVBench), [NeXT-QA](https://github.com/doc-doc/NExT-QA) and [Egoschema](https://drive.google.com/drive/folders/1SS0VVz8rML1e5gWq7D7VtP1oxE2UtmhQ)
@@ -170,7 +170,7 @@ The result should be:
     - Video Caption: [MSVD-Caption](https://opendatalab.com/OpenDataLab/MSVD), [MSRVTT-Caption](https://opendatalab.com/OpenDataLab/MSR-VTT), [VATEX](https://eric-xw.github.io/vatex-website/about.html)
 
 ### Benchmark Inference and Evaluation
-Following command will firstly run in parallel to inference on the selected benchmarks (Edit the parameters in [scripts/run_inference_benchmark.sh](https://github.com/bytedance/tarsier/scripts/run_inference_benchmark.sh): _"CHUNKS"_ and _"GPULIST"_ to customly control the parallelism), and then run evaluation.
+Following command will firstly run in parallel to inference on the selected benchmarks (Edit the parameters in [scripts/run_inference_benchmark.sh](https://github.com/bytedance/tarsier/blob/main/scripts/run_inference_benchmark.sh): _"CHUNKS"_ and _"GPULIST"_ to customly control the parallelism), and then run evaluation.
 ```bash
 model_name_or_path="path_to_the_model"
 output_dir="dream_predictions"
