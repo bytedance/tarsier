@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# copy and modify from: https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py
+# copy and modify from: https://github.com/huggingface/transformers/blob/main/src/transformers/models/llava/modeling_llava.py
 """ PyTorch Llava model."""
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
