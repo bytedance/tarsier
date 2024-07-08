@@ -36,7 +36,7 @@ Welcome to Tarsier!
 In this repository, we introduce Tarsier -- a family of large-scale video-language models, which is designed to generate high-quality video descriptions (see Figure 1), together with good capability of general video understanding (SOTA results on 6 open benchmarks). Tarsier takes a simple model structure (CLIP-ViT + LLM), combined with a carefully designed training strategy: multi-task pre-training (stage-1) and multi-grained instruction tuning (stage-2).
 
 Besides the model, we propose a new video description benchmark called DREAM-1K (<b>D</b>escription
-with <b>R</b>ich <b>E</b>vents, <b>A</b>ctions, and <b>M</b>otions), featuring videos from diverse sources and varying complexity. AutoDQ (<b>Auto</b>matic <b>D</b>escription Quality) is also introduced as a highly interpretable and discriminative approach to evaluate video description quality.
+with <b>R</b>ich <b>E</b>vents, <b>A</b>ctions, and <b>M</b>otions), featuring videos from diverse sources and varying complexity. AutoDQ (<b>Auto</b>matic <b>D</b>escription <b>Q</b>uality) is also introduced as a highly interpretable and discriminative approach to evaluate video description quality.
 
 We have released the model, code, and data for inference, evaluation and depolyment.
 
@@ -188,7 +188,7 @@ benchmarks="dream" # Same as above code block
 
 bash run_evaluation_only.sh $pred_dir $benchmark
 ```
-The evaluation result will be save as: _{pred_dir}/{benchmark-name}\_eval\_result.txt_
+The evaluation result will be saved as: _{pred_dir}/{benchmark-name}\_eval\_result.txt_
 
 ## Deployment
 ### CLI Demo
