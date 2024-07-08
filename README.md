@@ -15,13 +15,13 @@ ByteDance Research
 [![Model on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm-dark.svg)](https://huggingface.co/omni-research/Tarsier-34b)
 [![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-sm-dark.svg)](https://huggingface.co/datasets/omni-research/DREAM-1K)
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/video-question-answering-on-mvbench)](https://paperswithcode.com/sota/video-question-answering-on-mvbench?p=tarsier-recipes-for-training-and-evaluating)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/zero-shot-video-question-answer-on-next-qa)](https://paperswithcode.com/sota/zero-shot-video-question-answer-on-next-qa?p=tarsier-recipes-for-training-and-evaluating)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/zero-shot-video-question-answer-on-egoschema-1)](https://paperswithcode.com/sota/zero-shot-video-question-answer-on-egoschema-1?p=tarsier-recipes-for-training-and-evaluating)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/zeroshot-video-question-answer-on-msvd-qa)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-msvd-qa?p=tarsier-recipes-for-training-and-evaluating)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/zeroshot-video-question-answer-on-tgif-qa)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-tgif-qa?p=tarsier-recipes-for-training-and-evaluating)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/zeroshot-video-question-answer-on-activitynet)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-activitynet?p=tarsier-recipes-for-training-and-evaluating)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating/zeroshot-video-question-answer-on-msrvtt-qa)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-msrvtt-qa?p=tarsier-recipes-for-training-and-evaluating)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/video-question-answering-on-mvbench)](https://paperswithcode.com/sota/video-question-answering-on-mvbench?p=tarsier-recipes-for-training-and-evaluating-1)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zero-shot-video-question-answer-on-next-qa)](https://paperswithcode.com/sota/zero-shot-video-question-answer-on-next-qa?p=tarsier-recipes-for-training-and-evaluating-1)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zero-shot-video-question-answer-on-egoschema-1)](https://paperswithcode.com/sota/zero-shot-video-question-answer-on-egoschema-1?p=tarsier-recipes-for-training-and-evaluating-1)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zeroshot-video-question-answer-on-msvd-qa)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-msvd-qa?p=tarsier-recipes-for-training-and-evaluating-1)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zeroshot-video-question-answer-on-tgif-qa)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-tgif-qa?p=tarsier-recipes-for-training-and-evaluating-1)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zeroshot-video-question-answer-on-activitynet)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-activitynet?p=tarsier-recipes-for-training-and-evaluating-1)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zeroshot-video-question-answer-on-msrvtt-qa)](https://paperswithcode.com/sota/zeroshot-video-question-answer-on-msrvtt-qa?p=tarsier-recipes-for-training-and-evaluating-1)
 
 
 <div align="center">
@@ -87,20 +87,27 @@ We proposed DREAM-1K as a challenging video description benchmark. It contrains 
   <br>Figure 3: DREAM-1K data Statistics.
 </div>
 
+Figure 4 shows the human reference and description results of different models of one video clip ([assets/videos/sitting.mp4](https://github.com/bytedance/tarsier/blob/main/assets/videos/sitting.mp4)) from DREAM-1K.
+
+<div align="center">
+  <img src="assets/figures/video-description-example.jpg" width = "100%">
+  <br>Figure 4: Human reference and description results of different models on one video clip from DREAM-1K.
+</div>
+
 #### Evaluation Approach: AutoDQ
-We propose AutoDQ as a more interpretable approach to automatic video description evaluation. AutoDQ uses an extraction model to extract events from two video descriptions, then uses an entailment model to examine how many events extracted from one description are entailed by the other description. We use ChatGPT to implement both models, as shown in Figure 4.
+We propose AutoDQ as a more interpretable approach to automatic video description evaluation. AutoDQ uses an extraction model to extract events from two video descriptions, then uses an entailment model to examine how many events extracted from one description are entailed by the other description. We use ChatGPT to implement both models, as shown in Figure 5.
 <div align="center">
   <img src="assets/figures/automatic-evaluation.png" width = "90%">
-  <br>Figure 4: The AutoDQ workflow.</a>
+  <br>Figure 5: The AutoDQ workflow.</a>
 </div>
 
 The relative code is: [evaluation/metrics/evaluate_dream_gpt.py](https://github.com/bytedance/tarsier/blob/main/evaluation/metrics/evaluate_dream_gpt.py)
 
 #### Evaluation Results
-We evaluate some advanced open-source video understanding models and two proprietary models (GPT-4V and Genmini 1.5 Pro) on DREAM-1K. The results are shown in Figure 5.
+We evaluate some advanced open-source video understanding models and two proprietary models (GPT-4V and Genmini 1.5 Pro) on DREAM-1K. The results are shown in Figure 6.
 <div align="center">
   <img src="assets/figures/dream_1k_results.png" width = "100%">
-  <br>Figure 5: Evaluation results on DREAM-1K.
+  <br>Figure 6: Evaluation results on DREAM-1K.
 </div>
 
 ### Video Understanding Benchmarks Evaluation
@@ -194,12 +201,12 @@ bash scripts/run_demo_cli.sh $model_path
 Bellow is the input video and a conversation with Tarsier-34b about the video:
 <div align="center">
   <img src="assets/videos/demo_test.gif" width = "100%">
-  <br>Figure 6: Input video in CLI Demo.</a>
+  <br>Figure 7: Input video in CLI Demo.</a>
 </div>
 <br>
 <div align="center">
   <img src="assets/videos/demo_cli_example.gif" width = "100%">
-  <br>Figure 7: Conversation in CLI Demo.</a>
+  <br>Figure 8: Conversation in CLI Demo.</a>
 </div>
 
 ### Gradio Demo
@@ -214,7 +221,7 @@ The gradio page show be as following. You shoud input a Video/Image/GIF in accor
 
 <div align="center">
   <img src="assets/figures/gradio_page.png" width = "100%">
-  <br>Figure 8: Tarsier Gradio Demo.</a>
+  <br>Figure 9: Tarsier Gradio Demo.</a>
 </div>
 
 # <span id="citeus">Citation</span>
