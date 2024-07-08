@@ -91,7 +91,7 @@ Figure 4 shows the human reference and description results of different models o
 
 <div align="center">
   <img src="assets/figures/video-description-example.jpg" width = "100%">
-  <br>Figure 4: Human reference and description results of different models on one video clip from DREAM-1K.
+  <br>Figure 4: Human reference and description results of different models on one video clip from DREAM-1K. This video features six actions, each highlighted in a unique color. Model hallucinations are indicated by underlining and red color.
 </div>
 
 #### Evaluation Approach: AutoDQ
