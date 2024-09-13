@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# copy and modify from: https://github.com/huggingface/transformers/blob/main/src/transformers/models/llava/modeling_llava.py
+# copy and modify from: https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py
 """ PyTorch Llava model."""
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
@@ -396,8 +396,7 @@ TARSIER_INPUTS_DOCSTRING = r"""
 class TarsierForConditionalGeneration(TarsierPreTrainedModel):
     def __init__(self, config: LlavaConfig):
         super().__init__(config)
-        self.vision_tower = AutoModel.from_config(config.vision_config)
-
+        self.vision_tower = AutoModel.from_config(config.vision_config, trust_remote_code=True)
         self.multi_modal_projector = LlavaMultiModalProjector(config)
         self.vocab_size = config.vocab_size
         self.language_model = AutoModelForCausalLM.from_config(config.text_config, attn_implementation="flash_attention_2")
@@ -600,6 +599,7 @@ class TarsierForConditionalGeneration(TarsierPreTrainedModel):
             
             # 2. Merge text and images
             if pixel_values is not None and input_ids.shape[1] != 1:
+                pixel_values = pixel_values.to(dtype=self.vision_tower.dtype)
                 image_outputs = self.vision_tower(pixel_values, output_hidden_states=True)
                 # this is not memory efficient at all (output_hidden_states=True) will save all the hidden stated.
                 selected_image_feature = image_outputs.hidden_states[vision_feature_layer]
