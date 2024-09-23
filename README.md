@@ -2,7 +2,7 @@
 
 <h2><a href="https://github.com/bytedance/tarsier">Tarsier: Recipes for Training and Evaluating Large Video Description Models</a></h2>
 
-Jiawei Wang*, Liping Yuan*, Yuchen Zhang*
+Jiawei Wang*, Liping Yuan*, Yuchen Zhang*, Haomiao Sun
 
 ByteDance Research
 
@@ -30,6 +30,15 @@ ByteDance Research
   </a>
 </div>
 
+# Release Notes
+- [2024/09/19] 🔥🚀 **Tarsier2-7B✨** is out! [Tarsier2-7B](https://huggingface.co/omni-research/Tarsier2-7b) is the first 7B-scale model that can generate GPT-4o-level high-quality detailed video descriptions. Compared with our previous Tarsier-7B/34B, Tarsier2-7B is upgraded in:
+  - **Lightweight:** Tarsier2 delivers outstanding video description quality without requiring massive models. It comprises a 7B LLM ([Qwen2-7B](https://huggingface.co/Qwen/Qwen2-7B-Instruct)) and a 400M vision encoder ([SigLIP](https://huggingface.co/google/siglip-so400m-patch14-384)).
+  - **Precision:** We've redesigned our pre-training and post-training processes, using larger, high-quality video-text datasets (see [Tarsier2 Training Data](#Tarsier2-Data)). Tarsier2-7B now generates video descriptions that are significantly more precise than those of Tarsier-34B, rivaling state-of-the-art models like GPT-4o.
+  - **Flexibility:** Tarsier2 adapts to diverse instructions, generating video descriptions of various lengths and levels of detail. It supports outputs in both English and Chinese.
+- [2024/09/19] 🔥🚀 **[DREAM-1K Leaderboard](https://tarsier-vlm.github.io/)** is out! 20+ latest open-source or closed-source video understanding models are evaluted on the capacity of detailed video description on 1000 video clips of multiple-sources and multi-complexities. Check out the **[DREAM-1K Explorer](https://tarsier-vlm.github.io/explorer.html)** for the video clips and different model results.
+
+- [2024/07/04] 🔥 **Tarsier** is out! We released the model ([Tarsier-7b](https://huggingface.co/omni-research/Tarsier-7b)/[Tarsier-34b](https://huggingface.co/omni-research/Tarsier-34b)), [code](https://github.com/bytedance/tarsier/tree/main), and [data](https://huggingface.co/datasets/omni-research/DREAM-1K) for inference, evaluation and depolyment. Tarsier-34B gains **SOTA** results on 6 open video understanding benchmarks and _comparable capacity of detailed video description to Genmini 1.5 Pro_!
+
 # Perface
 Welcome to Tarsier!
 
@@ -44,6 +53,7 @@ We have released the model, code, and data for inference, evaluation and depolym
 
   | Model      | Link                                                                |
   | -----------|------------------------------------------------------------------------------------------------------------- |
+  | Tarsier2-7b✨ | https://huggingface.co/omni-research/Tarsier2-7b |
   | Tarsier-7b  | https://huggingface.co/omni-research/Tarsier-7b |
   | Tarsier-34b | https://huggingface.co/omni-research/Tarsier-34b |
 
@@ -78,6 +88,17 @@ Tarsier tasks a two-stage training strategy.
 - Stage-2: Multi-grained Instruction Tuning on 500K data
   
 In both stages, we freeze ViT and train all the parameters of projection layer and LLM.
+
+<span id="Tarsier2-Data"><mark>**Update for Tarsier2 Training Data**</mark></span>
+
+For Tarsier2, we have increased both the scale and the quality of our training data:
+- 26.1M video-text pairs, with 18.7M highj-quality in-house data;
+- 11.0M image-text pairs, with 1.13M highj-quality in-house data;
+- 1.11M text instruction tuning data.
+<div align="center">
+    <img src="assets/figures/tarsier2_training_dataset.png" width = "50%">
+  </a>
+</div>
 
 ### Video Description Evaluation
 #### Benchmark: DREAM-1K

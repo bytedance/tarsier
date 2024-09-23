@@ -515,7 +515,7 @@ class TarsierForConditionalGeneration(TarsierPreTrainedModel):
         image_features = image_features.view(num_images, num_height_patches, num_width_patches, embed_dim)
         image_features = torch.cat([
             image_features,
-            image_newline.expand((num_images, num_height_patches, 1, embed_dim))
+            image_newline.expand((num_images, num_height_patches, 1, embed_dim)).to(device=image_features.device)
         ], dim=2)
         num_image_patches += num_height_patches
         image_features = image_features.view(num_images, num_image_patches, embed_dim)
@@ -524,7 +524,7 @@ class TarsierForConditionalGeneration(TarsierPreTrainedModel):
         image_new = self.get_input_embeddings()(self.image_new_idx).squeeze()
         image_features = torch.cat([
             image_features,
-            image_new.expand((num_images, 1, embed_dim))
+            image_new.expand((num_images, 1, embed_dim)).to(device=image_features.device)
         ], dim = 1)
 
         return image_features
