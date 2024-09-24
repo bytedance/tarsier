@@ -33,7 +33,7 @@ ByteDance Research
 # Release Notes
 - [2024/09/19] 🔥🚀 **Tarsier2-7B✨** is out! [Tarsier2-7B](https://huggingface.co/omni-research/Tarsier2-7b) is the first 7B-scale model that can generate GPT-4o-level high-quality detailed video descriptions. Compared with our previous Tarsier-7B/34B, Tarsier2-7B is upgraded in:
   - **Lightweight:** Tarsier2 delivers outstanding video description quality without requiring massive models. It comprises a 7B LLM ([Qwen2-7B](https://huggingface.co/Qwen/Qwen2-7B-Instruct)) and a 400M vision encoder ([SigLIP](https://huggingface.co/google/siglip-so400m-patch14-384)).
-  - **Precision:** We've redesigned our pre-training and post-training processes, using larger, high-quality video-text datasets (see [Tarsier2 Training Data](#Tarsier2-Data)). Tarsier2-7B now generates video descriptions that are significantly more precise than those of Tarsier-34B, rivaling state-of-the-art models like GPT-4o.
+  - **Precision:** We've redesigned our pre-training and post-training processes, using larger, high-quality video-text datasets (see [Tarsier2 Training Data](#Tarsier2-Data)). Tarsier2-7B now generates video descriptions that are significantly more precise than those of Tarsier-34B, rivaling state-of-the-art models like GPT-4o. _In the human side-by-side comparison, Tarsier2-7B gains a slight advantage (4.8%) over GPT-4o._
   - **Flexibility:** Tarsier2 adapts to diverse instructions, generating video descriptions of various lengths and levels of detail. It supports outputs in both English and Chinese.
 - [2024/09/19] 🔥🚀 **[DREAM-1K Leaderboard](https://tarsier-vlm.github.io/)** is out! 20+ latest open-source or closed-source video understanding models are evaluted on the capacity of detailed video description on 1000 video clips of multiple-sources and multi-complexities. Check out the **[DREAM-1K Explorer](https://tarsier-vlm.github.io/explorer.html)** for the video clips and different model results.
 
@@ -92,8 +92,8 @@ In both stages, we freeze ViT and train all the parameters of projection layer a
 <span id="Tarsier2-Data"><mark>**Update for Tarsier2 Training Data**</mark></span>
 
 For Tarsier2, we have increased both the scale and the quality of our training data:
-- 26.1M video-text pairs, with 18.7M highj-quality in-house data;
-- 11.0M image-text pairs, with 1.13M highj-quality in-house data;
+- 26.1M video-text pairs, with 18.7M high-quality in-house data;
+- 11.0M image-text pairs, with 1.13M high-quality in-house data;
 - 1.11M text instruction tuning data.
 <div align="center">
     <img src="assets/figures/tarsier2_training_dataset.png" width = "50%">
