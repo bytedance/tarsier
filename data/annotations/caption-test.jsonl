@@ -1,0 +1,2 @@
+{"idx": 1, "dataset": "caption-test", "text": {"prompt": "<video>\nDescribe the video in detail."}, "video_file": "/mnt/bn/videonaslq/wangjw/code/tarsier/assets/videos/sitting.mp4", "vid": 1}
+{"idx": 2, "dataset": "caption-test", "text": {"prompt": "<video>\nDescribe the video in detail."}, "video_file": "/mnt/bn/videonaslq/wangjw/code/tarsier/assets/videos/coffee.gif", "vid": 2}

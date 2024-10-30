@@ -14,7 +14,6 @@
 import argparse
 from tasks.utils import load_model_and_processor
 from dataset.mm_dataset import MMDataset
-from dataset.utils import get_benchmarks
 
 import json
 import os
@@ -24,30 +23,6 @@ from tqdm import tqdm
 
 ANN_ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../data/annotations'
 
-Benchmark2fname = {
-    'dream': 'DREAM-1k.jsonl',
-
-    'next-qa': 'Next-QA-val-multi_choice.jsonl',
-    'egoschema': 'EgoSchema_subset.jsonl', # change to EgoSchema_fullset.jsonl if you test on the fullset
-    'mvbench': 'MVBench.jsonl',
-    'video-mme': 'Video-MME.jsonl',
-
-    'msvd-qa': 'MSVD-QA-val.jsonl',
-    'msr-vtt-qa': 'MSR-VTT-QA-val.jsonl',
-    'tgif-qa': 'TGIF-QA-test.jsonl',
-    'anet-qa': 'ActivityNet-QA-test.jsonl',
-
-    'msvd-caption': 'MSVD-Caption-test.jsonl',
-    'msr-vtt-caption': 'MSR-VTT-Caption-test.jsonl',
-    'vatex-caption': 'VATEX-test.jsonl',
-
-    'video_caption': "caption-test.jsonl", # custom for video caption test
-}
-
-def get_ann_file_path(benchmark):
-    ann_fpath = os.path.join(ANN_ROOT_DIR, Benchmark2fname[benchmark])
-    assert os.path.exists(ann_fpath), f"The annotation file for {benchmark} not exists: {ann_fpath}"
-    return ann_fpath
 
 def check_video_path_processed(anns):
     if "<placeholder>" in anns[0]['video_file']:
@@ -80,6 +55,7 @@ def parse_args():
     parser.add_argument("--top_p", type=float, default=1, help="Top_p sampling")
     parser.add_argument("--temperature", type=float, default=0, help="Set temperature > 0 to enable sampling generation.")
 
+    parser.add_argument("--input_file", type=str, help="Directory to input_file (jsonline)", required=True)
     parser.add_argument("--output_dir", type=str, help="Directory to save the model results", required=True)
     parser.add_argument("--output_name", type=str, default="predictions", help="Name of the file for storing results")
 
@@ -87,14 +63,9 @@ def parse_args():
     parser.add_argument("--chunk_idx", type=int, default=0)
 
     parser.add_argument("--max_n_samples_per_benchmark", type=int, default=-1, help="Set as a small number (like 100) to run as debug.")
-    parser.add_argument('--benchmarks', nargs='+', default=["all"], help="Default as 'all' to inference on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); And specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')")
-
     parser.add_argument("--resume", type=lambda x: (str(x).lower() == 'true'), default=True, help="Resume from existing inference results file or overwrite them.")
 
     args = parser.parse_args()
-
-    args.benchmarks = get_benchmarks(args.benchmarks)
-    print("### Selected Benchmarks:", args.benchmarks)
 
     return args
 
@@ -112,16 +83,15 @@ def run_inference(args):
     all_chunks = []
     count = 0
     print(f"Start loading dataset...")
-    for benchmark in args.benchmarks:
-        ann_fpath = get_ann_file_path(benchmark)
-        cur_anns = [json.loads(line) for line in open(ann_fpath)]
-        if args.max_n_samples_per_benchmark > 0:
-            cur_anns = cur_anns[:args.max_n_samples_per_benchmark]
-        count += len(cur_anns)
-        assert check_video_path_processed(cur_anns), f"[{benchmark}] You firstly process the fake \'video_file\' in the annotations to real video path according to the \'vid\'!"
-        cur_chunk = get_chunk(cur_anns, args.num_chunks, args.chunk_idx)
-        all_chunks.extend(cur_chunk)
-        print(f"### [{benchmark}] Load chunk with {len(cur_chunk)} samples from {len(cur_anns)} samples.")
+    ann_fpath = args.input_file
+    cur_anns = [json.loads(line) for line in open(ann_fpath)]
+    if args.max_n_samples_per_benchmark > 0:
+        cur_anns = cur_anns[:args.max_n_samples_per_benchmark]
+    count += len(cur_anns)
+    assert check_video_path_processed(cur_anns), f"You must firstly process the fake \'video_file\' in the annotations to real video path according to the \'vid\'!"
+    cur_chunk = get_chunk(cur_anns, args.num_chunks, args.chunk_idx)
+    all_chunks.extend(cur_chunk)
+    print(f"### Load chunk with {len(cur_chunk)} samples from {len(cur_anns)} samples.")
     print(f"###Finish loading chunk with {len(all_chunks)} samples from {count} samples in total.")
 
     # Create the output directory if it doesn't exist
