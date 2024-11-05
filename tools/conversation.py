@@ -47,7 +47,7 @@ def get_prompt(conv):
             else:
                 ret += conv.sep1
         else:
-            ret += role + ":"
+            ret += role + ": "
     return ret
 
 
