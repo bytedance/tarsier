@@ -12,8 +12,9 @@ ByteDance Research
 <!-- [![Paper](https://img.shields.io/badge/cs.CV-2311.17005-b31b1b?logo=arxiv&logoColor=red)](https://arxiv.org/abs/2311.17005) -->
 
 [![arXiv](https://img.shields.io/badge/arXiv-2404.16994-b31b1b.svg)](https://arxiv.org/abs/2407.00634)
-[![Model on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-sm-dark.svg)](https://huggingface.co/omni-research/Tarsier-34b)
-[![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-sm-dark.svg)](https://huggingface.co/datasets/omni-research/DREAM-1K)
+[![Demo on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/deploy-on-spaces-md-dark.svg)](https://huggingface.co/spaces/omni-research/Tarsier2-7b)
+[![Model on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-md-dark.svg)](https://huggingface.co/omni-research/Tarsier-34b)
+[![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md-dark.svg)](https://huggingface.co/datasets/omni-research/DREAM-1K)
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/video-question-answering-on-mvbench)](https://paperswithcode.com/sota/video-question-answering-on-mvbench?p=tarsier-recipes-for-training-and-evaluating-1)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/tarsier-recipes-for-training-and-evaluating-1/zero-shot-video-question-answer-on-next-qa)](https://paperswithcode.com/sota/zero-shot-video-question-answer-on-next-qa?p=tarsier-recipes-for-training-and-evaluating-1)
@@ -31,6 +32,8 @@ ByteDance Research
 </div>
 
 # Release Notes
+- [2024/11/05] 🔥🚀 **[Online Demo of Tarsier2-7B](https://huggingface.co/spaces/omni-research/Tarsier2-7b)** is out! We've redesigned our pre-training and post-training processes, using larger, high-quality video-text datasets (see [Tarsier2 Training Data](#Tarsier2-Data)). Tarsier2-7B generates video descriptions that are significantly more precise than those of Tarsier-34B, rivaling state-of-the-art models like GPT-4o. _In the human side-by-side comparison, Tarsier2-7B gains a slight advantage (4.8%) over GPT-4o._
+20+ latest open-source or closed-source video understanding models are evaluted on the capacity of detailed video description on 1000 video clips of multiple-sources and multi-complexities. Check out the **[DREAM-1K Explorer](https://tarsier-vlm.github.io/explorer.html)** for the video clips and different model results.
 - [2024/09/19] 🔥🚀 **[DREAM-1K Leaderboard](https://tarsier-vlm.github.io/)** is out! 20+ latest open-source or closed-source video understanding models are evaluted on the capacity of detailed video description on 1000 video clips of multiple-sources and multi-complexities. Check out the **[DREAM-1K Explorer](https://tarsier-vlm.github.io/explorer.html)** for the video clips and different model results.
 
 - [2024/07/04] 🔥 **Tarsier** is out! We released the model ([Tarsier-7b](https://huggingface.co/omni-research/Tarsier-7b)/[Tarsier-34b](https://huggingface.co/omni-research/Tarsier-34b)), [code](https://github.com/bytedance/tarsier/tree/main), and [data](https://huggingface.co/datasets/omni-research/DREAM-1K) for inference, evaluation and depolyment. Tarsier-34B gains **SOTA** results on 6 open video understanding benchmarks and _comparable capacity of detailed video description to Genmini 1.5 Pro_!

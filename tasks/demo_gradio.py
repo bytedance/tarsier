@@ -13,26 +13,31 @@
 # limitations under the License.
 
 # copy and modify from: https://github.com/OpenGVLab/Ask-Anything/blob/main/video_chat2/demo/demo.py
+
+# import spaces # for deploying on huggingface ZeroGPU
 from copy import deepcopy
 import gradio as gr
 from gradio.themes.utils import colors, fonts, sizes
 from tools.conversation import Chat, conv_templates
-from tasks.utils import load_model_and_processor, file_to_base64
+from tools.utils import load_model_and_processor, file_to_base64
 from dataset.processor import Processor
 import os
 import torch
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model_path = os.getenv("MODEL_PATH", "")
-max_n_frames = int(os.getenv("MAX_N_FRAMES", 8))
-debug = True
+# huggingface-cli login
+
+model_path = os.getenv("MODEL_PATH", "omni-research/Tarsier2-7b")
+max_n_frames = int(os.getenv("MAX_N_FRAMES", 16))
+debug = False
+device = 'cuda' if not debug else 'cpu'
 
 # ========================================
 #             Model Initialization
 # ========================================
 def init_model():
     print("Start Initialization...")
-    if torch.cuda.is_available():
+    # if torch.cuda.is_available():
+    if not debug:
         model, processor = load_model_and_processor(model_path, max_n_frames)
     else:
         print(f"No Valid GPU! Lauch in debug mode!")
@@ -56,9 +61,11 @@ def gradio_reset(chat_state, img_file, img_list):
 
 
 def upload_img(gr_img, gr_video, gr_gif, chat_state, num_frames):
-    print(gr_img, gr_video)
+    print("video, image or gif:", gr_video, gr_img, gr_gif)
     conv_type = ''
-    if '7b' in model_path.lower():
+    if 'tarsier2-7b' in model_path.lower():
+        conv_type = 'tarsier2-7b'
+    elif '7b' in model_path.lower():
         conv_type = 'tarsier-7b'
     elif '13b' in model_path.lower():
         conv_type = 'tarsier-13b'
@@ -72,7 +79,7 @@ def upload_img(gr_img, gr_video, gr_gif, chat_state, num_frames):
     if gr_img is None and gr_video is None and gr_gif is None:
         return None, None, None, gr.update(interactive=True), gr.update(interactive=True, placeholder='Please upload video/image first!'), chat_state, None, None
     if gr_video or gr_img or gr_gif:
-        for img_file in [gr_video, gr_video, gr_gif]:
+        for img_file in [gr_video, gr_img, gr_gif]:
             if img_file is not None:
                 break
         return gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True, placeholder='Type and press Enter'), gr.update(value="Start Chatting", interactive=False), chat_state, img_file, img_list
@@ -81,13 +88,13 @@ def upload_img(gr_img, gr_video, gr_gif, chat_state, num_frames):
 def gradio_ask(user_message, chatbot, chat_state):
     if len(user_message) == 0:
         return gr.update(interactive=True, placeholder='Input should not be empty!'), chatbot, chat_state
-    chat_state =  chat.ask(user_message, chat_state)
+    chat_state = chat.ask(user_message, chat_state)
     chatbot = chatbot + [[user_message, None]]
     return '', chatbot, chat_state
 
-
+# @spaces.GPU(duration=120) # for deploying on huggingface ZeroGPU
 def gradio_answer(chatbot, chat_state, img_file, img_list, top_p, temperature, n_frames=None):
-    llm_message, chat_state, img_list = chat.answer(conv=chat_state, visual_data_file=img_file, images=img_list, n_frames=n_frames, max_new_tokens=512, num_beams=1, temperature=temperature, top_p=top_p)
+    llm_message, chat_state, img_list = chat.answer(conv=chat_state, visual_data_file=img_file, images=img_list, n_frames=n_frames, max_new_tokens=256, num_beams=1, temperature=temperature, top_p=top_p)
     chatbot[-1][1] = llm_message
     print(chat_state)
     print(f"Answer: {llm_message}")
@@ -155,7 +162,7 @@ with gr.Blocks(title="Tarsier",theme=gvlabtheme,css="#chatbot {overflow:auto; he
                 with gr.Tab("Image", elem_id='image_tab'):
                     up_image = gr.Image(type="filepath", interactive=True, elem_id="image_upload", height=360)
                 with gr.Tab("GIF", elem_id='gif_tab'):
-                    up_gif = gr.File(type="filepath", file_count="single", file_types=["gif"], interactive=True, elem_id="gif_upload", height=360)
+                    up_gif = gr.File(type="filepath", file_count="single", file_types=[".gif"], interactive=True, elem_id="gif_upload", height=360)
             upload_button = gr.Button(value="Upload & Start Chat", interactive=True, variant="primary")
             clear = gr.Button("Restart")
             
@@ -189,7 +196,7 @@ with gr.Blocks(title="Tarsier",theme=gvlabtheme,css="#chatbot {overflow:auto; he
             num_frames = gr.Slider(
                 minimum=4,
                 maximum=16,
-                value=8,
+                value=16,
                 step=2,
                 interactive=True,
                 label="#Frames",
@@ -206,7 +213,7 @@ with gr.Blocks(title="Tarsier",theme=gvlabtheme,css="#chatbot {overflow:auto; he
                 with gr.Column(scale=0.15, min_width=0):
                     run = gr.Button("💭Send")
                 with gr.Column(scale=0.15, min_width=0):
-                    clear = gr.Button("🔄Clear️")     
+                    clear = gr.Button("🔄Clear️")
     
     chat = init_model()
     upload_button.click(upload_img, [up_image, up_video, up_gif, chat_state, num_frames], [up_image, up_video, up_gif, text_input, upload_button, chat_state, img_file, img_list])
@@ -221,5 +228,5 @@ with gr.Blocks(title="Tarsier",theme=gvlabtheme,css="#chatbot {overflow:auto; he
     clear.click(gradio_reset, [chat_state, img_file, img_list], [chatbot, up_image, up_video, up_gif, text_input, upload_button, chat_state, img_file, img_list], queue=False)
 
 
-demo.launch(share=True)
+demo.launch()
 # demo.launch(server_name="0.0.0.0", server_port=11451)

@@ -78,6 +78,7 @@ class Chat:
 
     def prepare_model_inputs(self, conv, visual_data_file=None, images=None, n_frames=None):
         conv.messages.append([conv.roles[1], None])
+        print(conv.messages)
         conv.messages[0][1] = re.sub(f"({IMAGE_TOKEN}|{VIDEO_TOKEN})\n*", "", conv.messages[0][1])
         
         if images is None or isinstance(images, list) and len(images) == 0:
@@ -89,6 +90,10 @@ class Chat:
                 images = None
             else:
                 raise NotImplementedError
+    
+        # os.system("rm tmp_images/*")    
+        # for i, img in enumerate(images):
+        #     img.save(f"tmp_images/{i+1}.jpg")
         
         if isinstance(images, list) and len(images) > 0:
             conv.messages[0][1] = IMAGE_TOKEN*len(images) + '\n' + conv.messages[0][1]
@@ -102,7 +107,7 @@ class Chat:
         inputs = {k:v.to(self.device) for k,v in inputs.items() if v is not None}
         return inputs, conv, images
 
-    def answer(self, conv, visual_data_file=None, images=None, n_frames=None, max_new_tokens=512, num_beams=1, min_length=1, top_p=1.0,
+    def answer(self, conv, visual_data_file=None, images=None, n_frames=None, max_new_tokens=256, num_beams=1, min_length=1, top_p=1.0,
                repetition_penalty=1.0, length_penalty=1, temperature=0):
         inputs, conv, images = self.prepare_model_inputs(conv, visual_data_file, images, n_frames)
         if self.model is not None:
@@ -198,9 +203,18 @@ conv_tarsier_yi = EasyDict({
 }
 )
 
+conv_tarsier_qwen2 = EasyDict({
+    "system": "",
+    "roles": ("USER", "ASSISTANT"),
+    "messages": [],
+    "sep1": " ",
+    "sep2": "<|endoftext|>",
+}
+)
+
 conv_templates = {
     "tarsier-7b": conv_tarsier,
     "tarsier-13b": conv_tarsier,
     "tarsier-34b": conv_tarsier_yi,
+    "tarsier2-7b": conv_tarsier_qwen2
 }
-
