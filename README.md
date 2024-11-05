@@ -251,11 +251,11 @@ Pleae cite us as:
 ```BibTeX
 @misc{wang2024tarsierrecipestrainingevaluating,
       title={Tarsier: Recipes for Training and Evaluating Large Video Description Models}, 
-      author={Jiawei Wang and Liping Yuan and Yuchen Zhang},
+      author={Jiawei Wang and Liping Yuan and Yuchen Zhang and Haomiao Sun},
       year={2024},
       eprint={2407.00634},
       archivePrefix={arXiv},
       primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2407.00634},
+      url={https://arxiv.org/abs/2407.00634}, 
 }
 ```
