@@ -25,6 +25,7 @@ from tools.gpt_api import azure_gpt4_client
 import re
 import os
 from copy import deepcopy
+from traceback import format_exc
 
 def count_f1(r, p):
     return 2*r*p/(r+p)
@@ -174,7 +175,7 @@ def extract_events(inputs, is_pred=False, max_retry=10):
         caption = data['response'].lower()
     caption = caption.replace("\"", "\'")
     retry = 0
-    while retry < max_retry:
+    while True and (retry<max_retry or max_retry<0):
         retry += 1
         result, success = try_call_api_for_events(caption, model, verbose)
         if not success:
@@ -188,7 +189,7 @@ def extract_events(inputs, is_pred=False, max_retry=10):
             assert isinstance(events, list) and (len(events)==0 or isinstance(events[0], str))
             return events
         except Exception as e:
-            print(f"[error]: {e}", flush=True)
+            print(format_exc(), flush=True)
             continue
     print("[error]: Exceed max_retry!", flush=True)
     raise ValueError("[error]: Exceed max_retry!")
@@ -196,7 +197,7 @@ def extract_events(inputs, is_pred=False, max_retry=10):
 
 def evaluate_one_sample(events, response, prediction, model, verbose, return_hit_num=False, is_recall=False, max_retry=10):
     retry = 0
-    while retry < max_retry:
+    while True and (retry<max_retry or max_retry<0):
         retry += 1
         try:
             assert isinstance(events, list)
@@ -231,7 +232,7 @@ def evaluate_one_sample(events, response, prediction, model, verbose, return_hit
                 return motion_score, events_filled, f"hit: {num_matched_events} / {len(events)}"
             return motion_score
         except Exception as e:
-            print(f"[error]: {e}", flush=True)
+            print(format_exc(), flush=True)
             continue
     print("[error]: Exceed max_retry!", flush=True)
     raise ValueError(f"[error]: Exceed max_retry!")
