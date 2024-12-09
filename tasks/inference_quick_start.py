@@ -16,6 +16,36 @@ from dataset.utils import *
 import os
 from tqdm import tqdm
 
+def process_batch(model, processor, prompts, video_files, generate_kwargs):
+    """
+    model, processor = load_model_and_processor("omni-research/Tarsier-7b", 8)
+
+    generate_kwargs = {
+        "do_sample": False,
+        "max_new_tokens": 512,
+        "top_p": 1,
+        "temperature": 0,
+        "use_cache": True
+    }
+
+    video_files = [r"/root/tarsier/assets/videos/demo_cli_example.mp4", r"/root/tarsier/assets/videos/coffee.gif"]
+    prompts = ["<video>\nDescribe the video in detail.", "<video>\nDescribe the video in detail."]
+    response = process_batch(model, processor, prompts, video_files, generate_kwargs)
+    """
+    import torch
+    inputs_list = [processor(prompt, video_file, edit_prompt=True) for prompt, video_file in zip(prompts, video_files)]
+    input_ids_list = [inputs['input_ids'] for inputs in inputs_list]
+    pixel_values_list = [inputs['pixel_values'] for inputs in inputs_list]
+    inputs = {
+        'input_ids': torch.concat(input_ids_list, dim=0).to(model.device),
+        'pixel_values': torch.concat(pixel_values_list, dim=0).to(model.device)
+    }
+    outputs = model.generate(
+        **inputs,
+        **generate_kwargs,
+    )
+    return [processor.tokenizer.decode(output[inputs['input_ids'][index].shape[0]:], skip_special_tokens=True) for index, output in enumerate(outputs)]
+    
 def process_one(model, processor, prompt, video_file, generate_kwargs):
     inputs = processor(prompt, video_file, edit_prompt=True, return_prompt=True)
     if 'prompt' in inputs:
