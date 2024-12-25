@@ -11,7 +11,7 @@ ByteDance Research
 
 <!-- [![Paper](https://img.shields.io/badge/cs.CV-2311.17005-b31b1b?logo=arxiv&logoColor=red)](https://arxiv.org/abs/2311.17005) -->
 
-[![arXiv](https://img.shields.io/badge/arXiv-2404.16994-b31b1b.svg)](https://arxiv.org/abs/2407.00634)
+[![arXiv](https://img.shields.io/badge/arXiv-2407.00634-b31b1b.svg)](https://arxiv.org/abs/2407.00634)
 [![Demo on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/deploy-on-spaces-md-dark.svg)](https://huggingface.co/spaces/omni-research/Tarsier2-7b)
 [![Model on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-md-dark.svg)](https://huggingface.co/omni-research/Tarsier-34b)
 [![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md-dark.svg)](https://huggingface.co/datasets/omni-research/DREAM-1K)
