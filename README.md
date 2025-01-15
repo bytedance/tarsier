@@ -32,7 +32,7 @@ ByteDance Research
 </div>
 
 # Release Notes
-<!-- - [2025/01/15] 🔥🚀 **[Tarsier2-Recap-585K](https://huggingface.co/datasets/omni-research/Tarsier2-Recap-585K)** is out (under preparing)! Tarsier2-Recap-585K consists of 585K distinct video clips from open-source datasets (e.g. VATEX, TGIF, LSMDC, etc.) and each one with a detailed video description annotated by Tarsier2-7B. Experiments demonstrate its effectiveness in enhancing the capabilities of existing LVLMs for video description and general video understanding (See Section 4.3 of our [Technical Report](https://arxiv.org/abs/2501.07888)). -->
+- [2025/01/15] 🔥🚀 **[Tarsier2-Recap-585K](https://huggingface.co/datasets/omni-research/Tarsier2-Recap-585K)** is out! Tarsier2-Recap-585K consists of 585K distinct video clips from open-source datasets (e.g. VATEX, TGIF, LSMDC, etc.) and each one with a detailed video description annotated by Tarsier2-7B. Experiments demonstrate its effectiveness in enhancing the capabilities of existing LVLMs for video description and general video understanding (See Section 4.3 of our [Technical Report](https://arxiv.org/abs/2501.07888)).
 
 - [2025/01/15] 🔥🚀 **[Tarsier2 Technical Report](https://arxiv.org/abs/2501.07888)** is out! We propose Tarsier2-7B(-0115), which sets new state-
 of-the-art results across 16 public benchmarks, spanning tasks such as video captioning, video question-answering, video grounding, hallucination test, etc. Tarsier2-7B is comprehensively upgraded in base model ([Qwen2-VL-7B](https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct)) and training data & stage:
