@@ -12,23 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import argparse
+import torch
 from tasks.utils import load_model_and_processor
-from dataset.mm_dataset import MMDataset
+# from dataset.mm_dataset import MMDataset
+from dataset.custom_data_parsers.utils import put_pred_to_data_dict, get_prompt_from_data_dict
+from dataset.tarsier_datamodule import TarsierDataset
+from dataset.utils import *
 
 import json
 import os
 import math
 from tqdm import tqdm
+import yaml
 
 
 ANN_ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../data/annotations'
 
-
-def check_video_path_processed(anns):
-    if "<placeholder>" in anns[0]['video_file']:
-        return False
-    else:
-        return True
 
 def split_list(lst, n):
     """Split a list into n (roughly) equal-sized chunks"""
@@ -50,7 +49,8 @@ def parse_args():
     # Define the command-line arguments
     
     parser.add_argument('--model_name_or_path', type=str, required=True)
-    parser.add_argument("--max_n_frames", type=int, default=8, help="Max number of frames to apply average sampling from the given video.")
+    parser.add_argument('--config', type=str, default="configs/tarser2_default_config.yaml")
+    # parser.add_argument("--max_n_frames", type=int, default=8, help="Max number of frames to apply average sampling from the given video.")
     parser.add_argument("--max_new_tokens", type=int, default=512, help="max number of generated tokens")
     parser.add_argument("--top_p", type=float, default=1, help="Top_p sampling")
     parser.add_argument("--temperature", type=float, default=0, help="Set temperature > 0 to enable sampling generation.")
@@ -78,7 +78,9 @@ def run_inference(args):
         args: Command-line arguments.
     """
     # Initialize the model
-    model, processor = load_model_and_processor(args.model_name_or_path, args.max_n_frames)
+    # model, processor = load_model_and_processor(args.model_name_or_path, args.max_n_frames) # max_n_frames set in config_file
+    data_config = yaml.safe_load(open(args.config, 'r'))
+    model, processor = load_model_and_processor(args.model_name_or_path, data_config=data_config)
 
     all_chunks = []
     count = 0
@@ -88,7 +90,6 @@ def run_inference(args):
     if args.max_n_samples_per_benchmark > 0:
         cur_anns = cur_anns[:args.max_n_samples_per_benchmark]
     count += len(cur_anns)
-    assert check_video_path_processed(cur_anns), f"You must firstly process the fake \'video_file\' in the annotations to real video path according to the \'vid\'!"
     cur_chunk = get_chunk(cur_anns, args.num_chunks, args.chunk_idx)
     all_chunks.extend(cur_chunk)
     print(f"### Load chunk with {len(cur_chunk)} samples from {len(cur_anns)} samples.")
@@ -112,9 +113,8 @@ def run_inference(args):
     else:
         ans_file = open(answers_file, "w")
 
-    dataset = MMDataset(
-        anns=all_chunks,
-        processor=processor
+    dataset = TarsierDataset(
+        anns=all_chunks, config=data_config, processor=processor
     )
 
     generate_kwargs = {
@@ -127,26 +127,29 @@ def run_inference(args):
 
     if len(dataset) == 0:
         return
-    for ann, inputs in tqdm(dataset, total=len(dataset)):
+    for ann, inputs in tqdm(dataset):
         if inputs is not None:
-            if "prompt" in inputs:
-                prompt = inputs.pop('prompt')
-                # print(f"Prompt: {prompt}", flush=True)
-            # print(f"Input: {processor.tokenizer.decode(inputs['input_ids'][0])}", flush=True)
+            prompt = get_prompt_from_data_dict(ann)
+            print(f"###Prompt:\n{prompt}", flush=True)
+            # print(f"Input: {processor.processor.tokenizer.decode(inputs['input_ids'][0]), skip_special_tokens=True}", flush=True)
             try:
-                inputs = {k:v.to(model.device) for k,v in inputs.items() if v is not None}
+                model_inputs = {}
+                for k, v in inputs.items():
+                    if not isinstance(v, torch.Tensor):
+                        continue
+                    model_inputs[k] = v.to(model.device)
                 outputs = model.generate(
-                    **inputs,
+                    **model_inputs,
                     **generate_kwargs,
                 )
-                output_text = processor.tokenizer.decode(outputs[0][inputs['input_ids'][0].shape[0]:], skip_special_tokens=True)
+                output_text = processor.processor.tokenizer.decode(outputs[0][model_inputs['input_ids'][0].shape[0]:], skip_special_tokens=True)
             except Exception as e:
                 print(f"Error: {e}")
                 output_text = "<error>"
-            print(f"Prediction: {output_text}", flush=True)
-            ann["text"]['prediction'] = output_text
+            print(f"###Prediction:\n{output_text}", flush=True)
+            put_pred_to_data_dict(output_text, ann)
         else:
-            ann["text"]['prediction'] = "<error>"
+            put_pred_to_data_dict("<error>", ann)
         try:
             ans_file.write(json.dumps(ann, ensure_ascii=False) + "\n")
         except:
@@ -157,5 +160,6 @@ def run_inference(args):
 
 
 if __name__ == "__main__":
+    # python3 -m tasks.inference_caption --model_name_or_path /tmp/tarsier2-1226-dpo --config configs/tarser2_default_config.yaml --input_file  data/annotations/caption-test-new.jsonl --output_dir tmp_outputs
     args = parse_args()
     run_inference(args)

@@ -19,14 +19,15 @@ from copy import deepcopy
 import gradio as gr
 from gradio.themes.utils import colors, fonts, sizes
 from tools.conversation import Chat, conv_templates
-from tools.utils import load_model_and_processor, file_to_base64
-from dataset.processor import Processor
+from tasks.utils import load_model_and_processor, file_to_base64
+from dataset.tarsier_datamodule import init_processor
 import os
 import torch
 
 # huggingface-cli login
 
 model_path = os.getenv("MODEL_PATH", "omni-research/Tarsier2-7b")
+config_path = "configs/tarser2_default_config.yaml"
 max_n_frames = int(os.getenv("MAX_N_FRAMES", 16))
 debug = False
 device = 'cuda' if not debug else 'cpu'
@@ -38,12 +39,12 @@ def init_model():
     print("Start Initialization...")
     # if torch.cuda.is_available():
     if not debug:
-        model, processor = load_model_and_processor(model_path, max_n_frames)
+        model, processor = load_model_and_processor(model_path, config_path)
     else:
         print(f"No Valid GPU! Lauch in debug mode!")
-        processor = Processor(model_path, max_n_frames)
+        processor = init_processor(model_path, config_path)
         model = None
-    chat = Chat(model, processor, device, debug)
+    chat = Chat(model, processor, device, debug)c   
     print('Initialization Finished')
     return chat
 
@@ -51,13 +52,11 @@ def init_model():
 # ========================================
 #             Gradio Setting
 # ========================================
-def gradio_reset(chat_state, img_file, img_list):
+def gradio_reset(chat_state, img_file):
     if chat_state is not None:
         chat_state.messages = []
     img_file = None
-    if img_list is not None:
-        img_list = []
-    return None, gr.update(value=None, interactive=True), gr.update(value=None, interactive=True), gr.update(value=None, interactive=True), gr.update(placeholder='Please upload your video first', interactive=False),gr.update(value="Upload & Start Chat", interactive=True), chat_state, img_file, img_list
+    return None, gr.update(value=None, interactive=True), gr.update(value=None, interactive=True), gr.update(value=None, interactive=True), gr.update(placeholder='Please upload your video first', interactive=False),gr.update(value="Upload & Start Chat", interactive=True), chat_state, img_file
 
 
 def upload_img(gr_img, gr_video, gr_gif, chat_state, num_frames):
@@ -65,24 +64,24 @@ def upload_img(gr_img, gr_video, gr_gif, chat_state, num_frames):
     conv_type = ''
     if 'tarsier2-7b' in model_path.lower():
         conv_type = 'tarsier2-7b'
-    elif '7b' in model_path.lower():
-        conv_type = 'tarsier-7b'
-    elif '13b' in model_path.lower():
-        conv_type = 'tarsier-13b'
-    elif '34b' in model_path.lower():
-        conv_type = 'tarsier-34b'
+    # elif '7b' in model_path.lower():
+    #     conv_type = 'tarsier-7b'
+    # elif '13b' in model_path.lower():
+    #     conv_type = 'tarsier-13b'
+    # elif '34b' in model_path.lower():
+    #     conv_type = 'tarsier-34b'
     else:
         raise ValueError(f"Unknow model: {model_path}")
     chat_state = deepcopy(conv_templates[conv_type])
 
-    img_list = []
     if gr_img is None and gr_video is None and gr_gif is None:
         return None, None, None, gr.update(interactive=True), gr.update(interactive=True, placeholder='Please upload video/image first!'), chat_state, None, None
     if gr_video or gr_img or gr_gif:
         for img_file in [gr_video, gr_img, gr_gif]:
             if img_file is not None:
                 break
-        return gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True, placeholder='Type and press Enter'), gr.update(value="Start Chatting", interactive=False), chat_state, img_file, img_list
+        chat_state.append([chat_state.roles[0], {"type": "video", "text": img_file}])
+        return gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True, placeholder='Type and press Enter'), gr.update(value="Start Chatting", interactive=False), chat_state, img_file
 
 
 def gradio_ask(user_message, chatbot, chat_state):
@@ -93,12 +92,12 @@ def gradio_ask(user_message, chatbot, chat_state):
     return '', chatbot, chat_state
 
 # @spaces.GPU(duration=120) # for deploying on huggingface ZeroGPU
-def gradio_answer(chatbot, chat_state, img_file, img_list, top_p, temperature, n_frames=None):
-    llm_message, chat_state, img_list = chat.answer(conv=chat_state, visual_data_file=img_file, images=img_list, n_frames=n_frames, max_new_tokens=256, num_beams=1, temperature=temperature, top_p=top_p)
+def gradio_answer(chatbot, chat_state, img_file, top_p, temperature, n_frames=None):
+    llm_message, chat_state = chat.answer(conv=chat_state, n_frames=n_frames, max_new_tokens=256, num_beams=1, temperature=temperature, top_p=top_p)
     chatbot[-1][1] = llm_message
     print(chat_state)
     print(f"Answer: {llm_message}")
-    return chatbot, chat_state, img_list
+    return chatbot, chat_state
 
 
 class OpenGVLab(gr.themes.base.Base):
@@ -204,7 +203,6 @@ with gr.Blocks(title="Tarsier",theme=gvlabtheme,css="#chatbot {overflow:auto; he
         
         with gr.Column(visible=True)  as input_raws:
             chat_state = gr.State()
-            img_list = gr.State()
             img_file = gr.State()
             chatbot = gr.Chatbot(elem_id="chatbot",label='VideoChat')
             with gr.Row():
@@ -216,16 +214,16 @@ with gr.Blocks(title="Tarsier",theme=gvlabtheme,css="#chatbot {overflow:auto; he
                     clear = gr.Button("🔄Clear️")
     
     chat = init_model()
-    upload_button.click(upload_img, [up_image, up_video, up_gif, chat_state, num_frames], [up_image, up_video, up_gif, text_input, upload_button, chat_state, img_file, img_list])
+    upload_button.click(upload_img, [up_image, up_video, up_gif, chat_state, num_frames], [up_image, up_video, up_gif, text_input, upload_button, chat_state, img_file])
     
     text_input.submit(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]).then(
-        gradio_answer, [chatbot, chat_state, img_file, img_list, top_p, temperature, num_frames], [chatbot, chat_state, img_list]
+        gradio_answer, [chatbot, chat_state, img_file, top_p, temperature, num_frames], [chatbot, chat_state]
     )
     run.click(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]).then(
-        gradio_answer, [chatbot, chat_state, img_file, img_list, top_p, temperature, num_frames], [chatbot, chat_state, img_list]
+        gradio_answer, [chatbot, chat_state, img_file, top_p, temperature, num_frames], [chatbot, chat_state]
     )
     run.click(lambda: "", None, text_input)  
-    clear.click(gradio_reset, [chat_state, img_file, img_list], [chatbot, up_image, up_video, up_gif, text_input, upload_button, chat_state, img_file, img_list], queue=False)
+    clear.click(gradio_reset, [chat_state, img_file], [chatbot, up_image, up_video, up_gif, text_input, upload_button, chat_state, img_file], queue=False)
 
 
 demo.launch()
