@@ -16,3 +16,5 @@ scipy==1.13.0
 tiktoken==0.6.0
 transformers==4.47.0
 triton==2.2.0
+func_timeout==4.3.5
+

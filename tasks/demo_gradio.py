@@ -80,7 +80,7 @@ def upload_img(gr_img, gr_video, gr_gif, chat_state, num_frames):
         for img_file in [gr_video, gr_img, gr_gif]:
             if img_file is not None:
                 break
-        chat_state.append([chat_state.roles[0], {"type": "video", "text": img_file}])
+        chat_state.messages.append([chat_state.roles[0], {"type": "video", "text": img_file}])
         return gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True, placeholder='Type and press Enter'), gr.update(value="Start Chatting", interactive=False), chat_state, img_file
 
 

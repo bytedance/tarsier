@@ -35,7 +35,7 @@ if is_flash_attn_2_available():
 else:
     flash_attn_varlen_func = None
 
-from apex.normalization.fused_layer_norm import fused_rms_norm_affine
+# from apex.normalization.fused_layer_norm import fused_rms_norm_affine
 
 logger = logging.get_logger(__name__)
 
@@ -613,23 +613,6 @@ class Qwen2VisionTransformerPretrainedModel(Qwen2VLPreTrainedModel):
 
         return self.merger(hidden_states)
 
-class Qwen2RMSNorm(nn.Module):
-    def __init__(self, hidden_size, eps=1e-6):
-        """
-        Qwen2RMSNorm is equivalent to T5LayerNorm
-        """
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(hidden_size))
-        self.variance_epsilon = eps
-        self.normalized_shape = torch.Size((hidden_size, ))
-
-    def forward(self, hidden_states):
-        return fused_rms_norm_affine(input=hidden_states,
-                                     weight=self.weight,
-                                     normalized_shape=self.normalized_shape,
-                                     eps=self.variance_epsilon,
-                                     memory_efficient=True)
-
 # class Qwen2RMSNorm(nn.Module):
 #     def __init__(self, hidden_size, eps=1e-6):
 #         """
@@ -638,16 +621,33 @@ class Qwen2RMSNorm(nn.Module):
 #         super().__init__()
 #         self.weight = nn.Parameter(torch.ones(hidden_size))
 #         self.variance_epsilon = eps
+#         self.normalized_shape = torch.Size((hidden_size, ))
 
 #     def forward(self, hidden_states):
-#         input_dtype = hidden_states.dtype
-#         hidden_states = hidden_states.to(torch.float32)
-#         variance = hidden_states.pow(2).mean(-1, keepdim=True)
-#         hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)
-#         return self.weight * hidden_states.to(input_dtype)
+#         return fused_rms_norm_affine(input=hidden_states,
+#                                      weight=self.weight,
+#                                      normalized_shape=self.normalized_shape,
+#                                      eps=self.variance_epsilon,
+#                                      memory_efficient=True)
 
-#     def extra_repr(self):
-#         return f"{tuple(self.weight.shape)}, eps={self.variance_epsilon}"
+class Qwen2RMSNorm(nn.Module):
+    def __init__(self, hidden_size, eps=1e-6):
+        """
+        Qwen2RMSNorm is equivalent to T5LayerNorm
+        """
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(hidden_size))
+        self.variance_epsilon = eps
+
+    def forward(self, hidden_states):
+        input_dtype = hidden_states.dtype
+        hidden_states = hidden_states.to(torch.float32)
+        variance = hidden_states.pow(2).mean(-1, keepdim=True)
+        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)
+        return self.weight * hidden_states.to(input_dtype)
+
+    def extra_repr(self):
+        return f"{tuple(self.weight.shape)}, eps={self.variance_epsilon}"
     
 class Qwen2VLRotaryEmbedding(nn.Module):
     def __init__(
