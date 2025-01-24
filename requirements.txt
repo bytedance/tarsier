@@ -14,7 +14,5 @@ safetensors==0.4.2
 scikit-learn==1.4.1.post1
 scipy==1.13.0
 tiktoken==0.6.0
-torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
-https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.7/flash_attn-2.5.7+cu122torch2.1cxx11abiFALSE-cp39-cp39-linux_x86_64.whl
-transformers==4.44.2
+transformers==4.47.0
 triton==2.2.0

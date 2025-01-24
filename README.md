@@ -10,8 +10,8 @@ ByteDance Research
 </div>
 
 <!-- [![Paper](https://img.shields.io/badge/cs.CV-2311.17005-b31b1b?logo=arxiv&logoColor=red)](https://arxiv.org/abs/2311.17005) -->
-[![arXiv](https://img.shields.io/badge/arXiv-2501.07888-b31b1b.svg)](https://arxiv.org/abs/2501.07888)(Tarsier2)
-[![arXiv](https://img.shields.io/badge/arXiv-2407.00634-b31b1b.svg)](https://arxiv.org/abs/2407.00634)(Tarsier)
+
+[![arXiv](https://img.shields.io/badge/arXiv-2404.16994-b31b1b.svg)](https://arxiv.org/abs/2407.00634)
 [![Demo on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/deploy-on-spaces-md-dark.svg)](https://huggingface.co/spaces/omni-research/Tarsier2-7b)
 [![Model on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/model-on-hf-md-dark.svg)](https://huggingface.co/omni-research/Tarsier-34b)
 [![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md-dark.svg)](https://huggingface.co/datasets/omni-research/DREAM-1K)
@@ -32,20 +32,7 @@ ByteDance Research
 </div>
 
 # Release Notes
-- [2025/01/15] 🔥🚀 **[Tarsier2-Recap-585K](https://huggingface.co/datasets/omni-research/Tarsier2-Recap-585K)** is out! Tarsier2-Recap-585K consists of 585K distinct video clips from open-source datasets (e.g. VATEX, TGIF, LSMDC, etc.) and each one with a detailed video description annotated by Tarsier2-7B. Experiments demonstrate its effectiveness in enhancing the capabilities of existing LVLMs for video description and general video understanding (See Section 4.3 of our [Technical Report](https://arxiv.org/abs/2501.07888)).
-
-- [2025/01/15] 🔥🚀 **[Tarsier2 Technical Report](https://arxiv.org/abs/2501.07888)** is out! We propose Tarsier2-7B(-0115), which sets new state-
-of-the-art results across 16 public benchmarks, spanning tasks such as video captioning, video question-answering, video grounding, hallucination test, etc. Tarsier2-7B is comprehensively upgraded in base model ([Qwen2-VL-7B](https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct)) and training data & stage:
-  - Pre-train: We scale up the training data to 40M video-text pairs, featuring in both volume and diversity.
-  - SFT: Fine-grained temporal alignment is performed during supervised fine-tuning.
-  - DPO: Using model-based sampling to automatically construct preference data and applying DPO training for optimization.
-
-<div align="center">
-  <img src="assets/figures/performance_of_tarsier2.png" width = "50%">
-  <br>Figure 2: Tarsier2 sets new state-of-the-art on various public benchmarks.
-</div>
-
-- [2024/11/05] 🔥🚀 **[Online Demo of Tarsier2-7B-1105](https://huggingface.co/spaces/omni-research/Tarsier2-7b)** is out! We've redesigned our pre-training and post-training processes, using larger, high-quality video-text datasets (see [Tarsier2 Training Data](#Tarsier2-Data)). Tarsier2-7B-1105 generates video descriptions that are significantly more precise than those of Tarsier-34B, rivaling state-of-the-art models like GPT-4o. _In the human side-by-side comparison, Tarsier2-7B-1105 gains a slight advantage (4.8%) over GPT-4o._
+- [2024/11/05] 🔥🚀 **[Online Demo of Tarsier2-7B](https://huggingface.co/spaces/omni-research/Tarsier2-7b)** is out! We've redesigned our pre-training and post-training processes, using larger, high-quality video-text datasets (see [Tarsier2 Training Data](#Tarsier2-Data)). Tarsier2-7B generates video descriptions that are significantly more precise than those of Tarsier-34B, rivaling state-of-the-art models like GPT-4o. _In the human side-by-side comparison, Tarsier2-7B gains a slight advantage (4.8%) over GPT-4o._
 
 - [2024/09/19] 🔥🚀 **[DREAM-1K Leaderboard](https://tarsier-vlm.github.io/)** is out! 20+ latest open-source or closed-source video understanding models are evaluted on the capacity of detailed video description on 1000 video clips of multiple-sources and multi-complexities. Check out the **[DREAM-1K Explorer](https://tarsier-vlm.github.io/explorer.html)** for the video clips and different model results.
 
@@ -175,6 +162,7 @@ VIDEO_FILE="assets/videos/coffee.gif" # Or try your own example, could be images
 
 python3 -m tasks.inference_quick_start \
   --model_name_or_path $MODEL_NAME_OR_PATH \
+  --config configs/tarser2_data_config.yaml \
   --instruction "Describe the video in detail." \
   --input_path $VIDEO_FILE
 ```
@@ -262,16 +250,6 @@ The gradio page show be as following. You shoud input a Video/Image/GIF in accor
 Pleae cite us as:
 
 ```BibTeX
-@misc{yuan2025tarsier2advancinglargevisionlanguage,
-      title={Tarsier2: Advancing Large Vision-Language Models from Detailed Video Description to Comprehensive Video Understanding}, 
-      author={Liping Yuan and Jiawei Wang and Haomiao Sun and Yuchen Zhang and Yuan Lin},
-      year={2025},
-      eprint={2501.07888},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2501.07888}, 
-}
-
 @misc{wang2024tarsierrecipestrainingevaluating,
       title={Tarsier: Recipes for Training and Evaluating Large Video Description Models}, 
       author={Jiawei Wang and Liping Yuan and Yuchen Zhang and Haomiao Sun},
