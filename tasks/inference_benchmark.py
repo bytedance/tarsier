@@ -33,6 +33,7 @@ Benchmark2fname = {
     'next-qa': 'Next-QA-val-multi_choice.jsonl',
     'egoschema': 'EgoSchema_subset.jsonl', # change to EgoSchema_fullset.jsonl if you test on the fullset
     'mvbench': 'MVBench.jsonl',
+    'tvbench': 'TVBench.jsonl',
     'video-mme': 'Video-MME.jsonl',
 
     'msvd-qa': 'MSVD-QA-val.jsonl',

@@ -30,7 +30,7 @@ class AccuracyMetric:
         self.dataset.append(data)
     
     def process(self, dataset: List[Dict]):
-        if self.dataset_name == 'MVBench':
+        if self.dataset_name in ['MVBench', 'TVBench',]:
             return self._process_group_by_subtask(dataset)
         else:
             return self._process(dataset)
@@ -43,7 +43,7 @@ class AccuracyMetric:
                 success = False
             else:
                 prediction = prediction[0]
-                if '1'<=prediction<='5':
+                if '0'<=prediction<='5':
                     prediction = chr(int(prediction) + ord('A'))
                 success = prediction.isupper() and prediction.isalpha() and len(prediction) == 1
             if success:
@@ -78,7 +78,7 @@ class AccuracyMetric:
             self._process(subdata, subtask)
 
     def summarize_metric(self):
-        if self.dataset_name == 'MVBench':
+        if self.dataset_name in ['MVBench', 'TVBench',]:
             return self._summarize_metric_by_subtask()
         else:
             return self._summarize_metric()
@@ -121,7 +121,7 @@ class AccuracyMetric:
                 sub_invalid_results[data['subtask']].append(data)
             return sub_results, sub_invalid_results
         sub_results, sub_invalid_results = _group_by_subtask()
-        avg_accs = []
+        oa_accs = []
         subtasks = list(sub_results.keys())
         subtasks.sort(key=lambda x:f"{x.split('/')[-1].split(' ')[0][0]}{x.split('/')[-1].split(' ')[1][0]}")
         for subtask in subtasks:
@@ -131,11 +131,11 @@ class AccuracyMetric:
             for result in sub_rsts:
                 acc = result['result']['acc']
                 accs.append(acc)
+                oa_accs.append(acc)
             avg_acc = np.average(accs)
-            avg_accs.append(avg_acc)
             task_name = f"{subtask.split('/')[-1].split(' ')[0][0]}{subtask.split('/')[-1].split(' ')[1][0]}"
             self.table.add_row([task_name, round(avg_acc*100, 1), len(sub_rsts), len(sub_in_rsts)])
-        self.table.add_row(['OVERALL', round(np.average(avg_accs)*100, 1), len(self.results), len(self.invalid_results)])
+        self.table.add_row(['OVERALL', round(np.average(oa_accs)*100, 1), len(self.results), len(self.invalid_results)])
         print(f'=====Evaluation Summary=====')
         print(self.table)
     
@@ -146,7 +146,7 @@ class AccuracyMetric:
             output_dir = os.path.join(os.path.dirname(pred_path), 'eval_records')
         os.makedirs(output_dir, exist_ok=True)
         fout = open(os.path.join(output_dir, f'{self.dataset_name}_eval_result.txt'), 'w')
-        if self.dataset_name == 'MVBench':
+        if self.dataset_name in ['MVBench', 'TVBench',]:
             print(self.table, file=fout)
         else:
             for info in self.eval_records:
