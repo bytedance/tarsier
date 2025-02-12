@@ -69,7 +69,7 @@ We have released the model, code, and data for inference, evaluation and depolym
   | -----------|------------------------------------------------------------------------------------------------------------- |
   | Tarsier-7b  | https://huggingface.co/omni-research/Tarsier-7b |
   | Tarsier-34b | https://huggingface.co/omni-research/Tarsier-34b |
-  | Tarsier2-7b | https://huggingface.co/omni-research/Tarsier2-Recap-7b |
+  | Tarsier2-Recap-7b | https://huggingface.co/omni-research/Tarsier2-Recap-7b |
 
 - Code: https://github.com/bytedance/tarsier
 
