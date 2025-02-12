@@ -386,7 +386,7 @@ class TarsierForConditionalGeneration(TarsierPreTrainedModel, GenerationMixin):
                     self.get_input_embeddings(),
                 )
 
-            special_image_mask = input_ids == self.config.image_token_index
+            special_image_mask = (input_ids == self.config.image_token_index).to(inputs_embeds.device)
             if special_image_mask.sum() > 0:
                 image_features = image_features.to(inputs_embeds.device, inputs_embeds.dtype)
                 inputs_embeds = inputs_embeds.masked_scatter(
