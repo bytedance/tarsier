@@ -9,15 +9,15 @@ output_dir=$2
 benchmarks=${@:3}
 benchmarks=${benchmarks:-"all"}
 resume=True
-CHUNKS=2
+CHUNKS=8
 
 mkdir $output_dir
 
 echo "Using $CHUNKS GPUs"
 
 # Assuming GPULIST is a bash array containing your GPUs
-# GPULIST=(0 1 2 3 4 5 6 7)
-GPULIST=(0 1)
+GPULIST=(0 1 2 3 4 5 6 7)
+# GPULIST=(0 1)
 
 # Get the number of GPUs
 NUM_GPUS=${#GPULIST[@]}
@@ -43,7 +43,7 @@ for IDX in $(seq 1 $CHUNKS); do
             MEM_USAGE=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits -i $GPU_ID | tr -d '[:space:]')
             
             # Assuming a GPU is considered free if its memory usage is less than 100 MiB
-            if [ "$MEM_USAGE" -ge 100 ]; then
+            if [ $MEM_USAGE -ge 100 ]; then
                 ALL_GPUS_FREE=0
                 echo "GPU $GPU_ID is in use. Memory used: ${MEM_USAGE}MiB."
                 break  # Exit the loop early as we found a GPU that is not free
@@ -59,7 +59,7 @@ for IDX in $(seq 1 $CHUNKS); do
     echo "CUDA_VISIBLE_DEVICES=$CHUNK_GPUS_STR"
     CUDA_VISIBLE_DEVICES=$CHUNK_GPUS_STR python3 -m tasks.inference_benchmark \
         --model_name_or_path $model_name_or_path \
-        --max_n_frames 8 \
+        --config "configs/tarser2_default_config.yaml" \
         --max_new_tokens 512 \
         --top_p 1 \
         --temperature 0 \

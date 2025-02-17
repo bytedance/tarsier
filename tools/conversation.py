@@ -16,11 +16,42 @@
 from PIL import Image
 import torch
 from transformers import StoppingCriteria, StoppingCriteriaList
+from dataset.custom_data_parsers.utils import put_pred_to_data_dict, get_prompt_from_data_dict
+from dataset.tarsier_datamodule import TarsierDataProcessor
+from dataset.utils import *
 
 from enum import auto, Enum
 import os
-from dataset.processor import Processor
 import re
+
+data_dict_tmp = {
+    "messages": [
+        {
+            "role": "user", 
+            "content": [
+                {
+                    "type": "video", 
+                    "video": {
+                        "video_file": "/mnt/hdfs/vlm/videos/movies_aligned_0523/tt8266310/tt8266310_1.50.24-1.50.29.mp4"}
+                },
+                {
+                    "type": "text", 
+                    "text": "Describe the video in detail."
+                }
+            ]
+        }, 
+        {
+            "role": "assistant", 
+            "content": [
+                {
+                    "type": "text", 
+                    "text": "A man in the driver's seat, wearing a black jacket with a maroon shirt, fastens his seatbelt while smiling at the man in the passenger seat, who is adjusting his position. The passenger, also wearing a black jacket with a maroon shirt, turns to look forward and smiles. The driver then leans forward to start the car and leans back in his seat. In the background, a beige car is visible through the window."
+            }]}
+    ], 
+    "dataset": "video_caption", 
+    "task": "video/caption", 
+    "idx": 0, 
+}
 
 
 IMAGE_TOKEN = "<image>"
@@ -31,24 +62,48 @@ class SeparatorStyle(Enum):
     SINGLE = auto()
     TWO = auto()
 
-def get_prompt(conv):
-    ret = ""
-    if conv.system:
-        ret = conv.system + conv.sep1
+def get_data_dict(conv, max_n_frames=None):
+    data_dict = {
+        "messages": []
+    }
     for i, (role, message) in enumerate(conv.messages):
         if message:
-            # In current version, the image should be add at the first conversation round.
-            # So we need to remove the special image tokens in following user input.
-            if i > 0:
-                message = re.sub(f"({IMAGE_TOKEN}|{VIDEO_TOKEN})\n*", "", message)
-            ret += role + ": " + message
-            if i % 2:
-                ret += conv.sep2
+            text = message["text"]
+            content_type = message["type"]
+            content = {}
+            if content_type == "text":
+                content['type'] = 'text'
+                content['text'] = text
+                task = "text-only"
+            elif content_type == "video":
+                content['type'] = 'video'
+                content['video'] = {
+                    "video_file": text
+                }
+                if max_n_frames is not None:
+                    content['video']['n_frames'] = max_n_frames
+                task = "video/QA"
+            elif content_type == "image":
+                content['type'] = 'image'
+                content['image'] = {
+                    "image_file": text
+                }
+                task = "image/QA"
             else:
-                ret += conv.sep1
-        else:
-            ret += role + ": "
-    return ret
+                content['type'] = 'text'
+                content['text'] = text
+                task = "text-only"
+            if data_dict['messages'] and data_dict['messages'][-1]['role'] == role:
+                data_dict['messages'][-1]['content'].append(content)
+            else:
+                data_dict['messages'].append({
+                    "role": role,
+                    "content": [content]
+                })
+    data_dict['dataset'] = task
+    data_dict['task'] = task
+    check_data_format(data_dict)
+    return data_dict
 
 
 class StoppingCriteriaSub(StoppingCriteria):
@@ -64,52 +119,36 @@ class StoppingCriteriaSub(StoppingCriteria):
 
 
 class Chat:
-    def __init__(self, model, processor: Processor, device='cuda', debug=False):
+    def __init__(self, model, processor: TarsierDataProcessor, device='cuda', debug=False):
         self.model = model
         self.processor = processor
         self.device = device
         self.debug = debug
-        stop_words_ids = [torch.tensor([self.processor.tokenizer.eos_token_id]).to(device)]
+        stop_words_ids = [torch.tensor([self.processor.processor.tokenizer.eos_token_id]).to(device)]
         self.stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
 
     def ask(self,text,conv):
-        conv.messages.append([conv.roles[0], text])
+        conv.messages.append([conv.roles[0], {"text": text, "type": "text"}])
         return conv
 
-    def prepare_model_inputs(self, conv, visual_data_file=None, images=None, n_frames=None):
-        conv.messages.append([conv.roles[1], None])
-        print(conv.messages)
-        conv.messages[0][1] = re.sub(f"({IMAGE_TOKEN}|{VIDEO_TOKEN})\n*", "", conv.messages[0][1])
-        
-        if images is None or isinstance(images, list) and len(images) == 0:
-            if isinstance(visual_data_file, str) and os.path.exists(visual_data_file):
-                images = self.processor.load_images(visual_data_file, n_frames)
-            elif isinstance(visual_data_file, Image.Image):
-                images = [visual_data_file]
-            elif visual_data_file is None or visual_data_file == "":
-                images = None
-            else:
-                raise NotImplementedError
-    
-        # os.system("rm tmp_images/*")    
-        # for i, img in enumerate(images):
-        #     img.save(f"tmp_images/{i+1}.jpg")
-        
-        if isinstance(images, list) and len(images) > 0:
-            conv.messages[0][1] = IMAGE_TOKEN*len(images) + '\n' + conv.messages[0][1]
-
-        prompt = get_prompt(conv)
+    def prepare_model_inputs(self, conv, n_frames=None):
+        # print(conv.messages)
+        data_dict = get_data_dict(conv, n_frames)
         if self.debug:
-            print(f"visual_data_file: {visual_data_file}")
-            print(f"Prompt: {prompt}", flush=True)
+            # print(f"visual_data_file: {visual_data_file}", flush=True)
+            print(f"###Prompt:\n{get_prompt_from_data_dict(data_dict)}")
 
-        inputs = self.processor(prompt, images=images, edit_prompt=False, return_prompt=False)
-        inputs = {k:v.to(self.device) for k,v in inputs.items() if v is not None}
-        return inputs, conv, images
+        batch_data = self.processor(data_dict)
+        model_inputs = {}
+        for k, v in batch_data.items():
+            if not isinstance(v, torch.Tensor):
+                continue
+            model_inputs[k] = v.to(self.device)
+        return model_inputs, conv
 
-    def answer(self, conv, visual_data_file=None, images=None, n_frames=None, max_new_tokens=256, num_beams=1, min_length=1, top_p=1.0,
+    def answer(self, conv, n_frames=None, max_new_tokens=256, num_beams=1, min_length=1, top_p=1.0,
                repetition_penalty=1.0, length_penalty=1, temperature=0):
-        inputs, conv, images = self.prepare_model_inputs(conv, visual_data_file, images, n_frames)
+        inputs, conv = self.prepare_model_inputs(conv, n_frames)
         if self.model is not None:
             outputs = self.model.generate(
                 **inputs,
@@ -123,11 +162,13 @@ class Chat:
                 length_penalty=length_penalty,
                 temperature=temperature,
             )
-            output_text = self.processor.tokenizer.decode(outputs[0][inputs['input_ids'][0].shape[0]:], skip_special_tokens=True)
+            output_text = self.processor.processor.tokenizer.decode(outputs[0][inputs['input_ids'][0].shape[0]:], skip_special_tokens=True)
         else:
             output_text = "Fake respone as launched in debug mode!"
-        conv.messages[-1][1] = output_text
-        return output_text, conv, images
+        conv.messages.append(
+            [conv.roles[1], {"text": output_text, "type": "text"}]
+        )
+        return output_text, conv
 
 class EasyDict(dict):
     """
@@ -203,18 +244,13 @@ conv_tarsier_yi = EasyDict({
 }
 )
 
-conv_tarsier_qwen2 = EasyDict({
+conv_tarsier_qwen2_vl = EasyDict({
     "system": "",
-    "roles": ("USER", "ASSISTANT"),
+    "roles": ("user", "assistant"),
     "messages": [],
-    "sep1": " ",
-    "sep2": "<|endoftext|>",
 }
 )
 
 conv_templates = {
-    "tarsier-7b": conv_tarsier,
-    "tarsier-13b": conv_tarsier,
-    "tarsier-34b": conv_tarsier_yi,
-    "tarsier2-7b": conv_tarsier_qwen2
+    "tarsier2-7b": conv_tarsier_qwen2_vl
 }

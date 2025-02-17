@@ -19,6 +19,38 @@ from tools.rw_utils import read_jsonlines
 from tools.color import Color
 from dataset.utils import get_benchmarks
 
+def extract_item_for_eval(data_dict):
+    item = {}
+    prompt, prediction, reference = [], [], []
+    for msg in data_dict['messages']:
+        for content in msg['content']:
+            if content['type'] == 'text':
+                if msg['role'] == 'user':
+                    prompt.append(content['text'])
+                elif msg['role'] == 'assistant':
+                    if content.get('reference'):
+                        reference.append(content['reference'])
+                        prediction.append(content['text'])
+                        # prediction.append(content['reference']) # debug                   
+    
+    item['prompt'] = ''.join(prompt)
+    item['prediction'] = ''.join(prediction)
+    item['response'] = ''.join(reference)
+        
+    item['dataset'] = data_dict['dataset']
+    item['idx'] = f"{data_dict['dataset']}_{data_dict['idx']}"
+    extra_info = data_dict.get('extra_info', None)
+    vid = data_dict.get('vid', None)
+    if vid is not None:
+        item['vid'] = vid
+    if extra_info:
+        item['events'] = extra_info.get('events', None)
+        item['extra_info'] = extra_info
+    if 'is_hard' in data_dict:
+        item['is_hard'] = data_dict['is_hard']
+    
+    return item
+
 def read_dataset(path, dataset_name):
     if os.path.isdir(path):
         lines = []
@@ -37,14 +69,8 @@ def read_dataset(path, dataset_name):
             continue
 
         idxs.add(idx)
-        l['text']['dataset'] = l['dataset']
-        l['text']['idx'] = idx
-        extra_info = l.get('extra_info', None)
-        if extra_info:
-            extra_info['idx'] = l['idx']
-            l['text']['events'] = extra_info.get('events', None)
-            l['text']['extra_info'] = extra_info
-        dataset.append(l['text'])
+        item = extract_item_for_eval(l)
+        dataset.append(item)
     return dataset
 
 METRIC_MAPPING = {
@@ -82,7 +108,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--pred_file', type=str)
-    parser.add_argument('--benchmarks', nargs='+', default=["all"], help="Default as 'all' to evaluate on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); And specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')")
+    parser.add_argument('--benchmarks', nargs='+', default=["all"], help="Default as 'all' to evaluate on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); And specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')")
     parser.add_argument('--sample_num', type=int, default=-1)
     parser.add_argument('--verbose', action='store_true')
 
@@ -96,6 +122,7 @@ if __name__ == '__main__':
         'next-qa': 'AccuracyMetric',
         'egoschema': 'AccuracyMetric',
         'mvbench': 'AccuracyMetric',
+        'tvbench': 'AccuracyMetric',
         'video-mme': 'VideoMMEAccuracyMetric',
 
         # Open-ended QA
@@ -119,6 +146,7 @@ if __name__ == '__main__':
         'next-qa': 'Next-QA-val-multi_choice',
         'egoschema': 'EgoSchema',
         'mvbench': 'MVBench',
+        'tvbench': 'TVBench',
         'video-mme': 'Video-MME',
 
         'msvd-qa': 'MSVD-QA-val',

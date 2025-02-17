@@ -126,3 +126,61 @@ def get_benchmarks(benchmarks):
         else:
             final_benchmarks.append(bm)
     return final_benchmarks
+
+def check_data_format(data):
+    for msg in data['messages']:
+        if isinstance(msg['content'], dict):
+            msg['content'] = [msg['content']]
+        for content in msg['content']:
+            assert content['type'] in {'image', 'video', 'text'}, f"content['type']={content['type']} MUST be one of ['image', 'video', 'text']"
+            if content['type'] != "text":
+                media_path_key = f"{content['type']}_file"
+                meida_paths = content[content['type']][media_path_key]
+                if isinstance(meida_paths, str):
+                    meida_paths = [meida_paths]
+                for path in meida_paths:
+                    assert os.path.exists(path), f"File not found: {path}"
+
+def format_one_sample(media_file=None, prompt="Describe the video in detail."):
+    sample = {
+        "messages": []
+    }
+    user_content = {
+        "role": "user",
+        "content": []
+    }
+    if media_file is not None:
+        media_type = get_visual_type(media_file)
+        if media_type in ("video", "gif"):
+            media_type = "video"
+        media_path_key = f"{media_type}_file"
+        user_content["content"].append({
+            "type": media_type,
+            media_type: {
+                media_path_key: media_file,
+            }
+        })
+    user_content["content"].append({
+        "type": "text",
+        "text": prompt
+    })
+
+    assistant_content = {
+        "role": "assistant",
+        "content": []
+    }
+
+    sample["messages"].append(user_content)
+    sample["messages"].append(assistant_content)
+    if media_file is not None:
+        sample["task"] = f"{media_type}/QA"
+    else:
+        sample["task"] = 'text-only'
+    check_data_format(sample)
+    return sample
+
+
+class DictToObject(object):
+    def __init__(self, dictionary):
+        for key, value in dictionary.items():
+            setattr(self, key, value)

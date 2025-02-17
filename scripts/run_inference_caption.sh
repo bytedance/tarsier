@@ -58,7 +58,7 @@ for IDX in $(seq 1 $CHUNKS); do
     echo "CUDA_VISIBLE_DEVICES=$CHUNK_GPUS_STR"
     CUDA_VISIBLE_DEVICES=$CHUNK_GPUS_STR python3 -m tasks.inference_caption \
         --model_name_or_path $model_name_or_path \
-        --max_n_frames 8 \
+        --config "configs/tarser2_default_config.yaml" \
         --max_new_tokens 512 \
         --top_p 1 \
         --temperature 0 \

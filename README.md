@@ -1,12 +1,12 @@
 <div align="center">
 
-<h2><a href="https://github.com/bytedance/tarsier">Tarsier: Recipes for Training and Evaluating Large Video Description Models</a></h2>
+<h2><a href="https://github.com/bytedance/tarsier/tree/tarsier2">Tarsier2: Advancing Large Vision-Language Models from Detailed Video Description to Comprehensive Video Understanding</a></h2>
 
-Jiawei Wang*, Liping Yuan*, Yuchen Zhang*, Haomiao Sun
+Liping Yuan*, Jiawei Wang*, Haomiao Sun*, Yuchen Zhang*, Yuan Lin†
 
 ByteDance Research
 
-*:Equal contribution, sorted alphabetically.
+*Equally contributed. †Corresponding author.
 </div>
 
 <!-- [![Paper](https://img.shields.io/badge/cs.CV-2311.17005-b31b1b?logo=arxiv&logoColor=red)](https://arxiv.org/abs/2311.17005) -->
@@ -69,6 +69,7 @@ We have released the model, code, and data for inference, evaluation and depolym
   | -----------|------------------------------------------------------------------------------------------------------------- |
   | Tarsier-7b  | https://huggingface.co/omni-research/Tarsier-7b |
   | Tarsier-34b | https://huggingface.co/omni-research/Tarsier-34b |
+  | Tarsier2-Recap-7b | https://huggingface.co/omni-research/Tarsier2-Recap-7b |
 
 - Code: https://github.com/bytedance/tarsier
 
@@ -160,13 +161,14 @@ Then run the setup script:
 ```bash
 git clone https://github.com/bytedance/tarsier.git
 cd tarsier
+git checkout tarsier2
 
 bash setup.sh
 ```
 Note that you should fill in the environment parameters for calling OpenAI Service through Azure, if you need to run evaluations based on ChatGPT (for Open-ended QA and DREAM-1K).
 
 ## Model Prepare
-Download the model checkpoints from Hugging Face: [Tarsier-7b](https://huggingface.co/omni-research/Tarsier-7b) and [Tarsier-34b](https://huggingface.co/omni-research/Tarsier-34b).
+Download the model checkpoints from Hugging Face: [Tarsier2-Recap-7b](https://huggingface.co/omni-research/Tarsier2-Recap-7b).
 
 ## Quick Start
 You can use the following script to run a quick start of video detailed description:
@@ -177,44 +179,82 @@ VIDEO_FILE="assets/videos/coffee.gif" # Or try your own example, could be images
 
 python3 -m tasks.inference_quick_start \
   --model_name_or_path $MODEL_NAME_OR_PATH \
+  --config configs/tarser2_default_config.yaml \
   --instruction "Describe the video in detail." \
   --input_path $VIDEO_FILE
 ```
 The result should be:
 ```bash
-# Tarsier-7b:
-"Prediction: A person is sitting at an outdoor café table with a cup of coffee and a book. The person takes a sip from the cup and then looks at the book. The background features the Eiffel Tower and is surrounded by red roses. Another person walks by in the background, waving at the first person. The scene is set in a Parisian outdoor café with street lamps and greenery visible."
+# Model: Tarsier2-Recap-7b
+## input_path: assets/videos/coffee.gif
+A hand picks up a cup of coffee with a heart-shaped design on the foam from a table surrounded by red roses. The person lifts the cup and takes a sip while holding a book. The person then turns their head to the left, looking towards two other individuals sitting at a table in the background. The two individuals in the background wave and make gestures towards the person drinking coffee. The scene gradually fades out.
 
-# Tarsier-34b:
-"Prediction: A person picks up a cup of coffee from a table and takes a sip while holding a book. The scene is set in an outdoor café with the Eiffel Tower visible in the background. The person then turns to look at two other individuals who are seated at a nearby table. The two individuals wave at the person with the coffee. The person continues to hold the coffee cup and book, looking back at the two individuals."
+## input_path: assets/videos/demo_test.mp4
+A man wearing a beanie peeks from behind a tree in a snowy forest, gradually revealing more of his face as he looks ahead. The camera then shows another man carrying a bundle of items walking through the snowy forest. The first man, still behind the tree, quickly draws a gun and aims it at the approaching man. The second man, noticing the gun pointed at him, turns his head to look back.
+
+## input_path: assets/videos/sitting.mp4
+A woman is sitting on a wooden floor with a gray exercise mat in front of her, which has a pair of headphones, a smartphone, pink dumbbells, and a glass of orange juice on it. She reaches for the headphones and puts them on. She then picks up the glass of orange juice, opens the lid, and takes a sip. After drinking, she places the glass back on the floor and clasps her hands together.
 ```
 
 
 ## Benchmark Inference and Evaluation
+Here we provide the evaluation examples for Video Caption and Multi-choice VQA.
 ### Data Prepare
-1. DREAM-1K
-  
-    Download Video from https://huggingface.co/datasets/omni-research/DREAM-1K.
+1. Raw Dataset
+  - Video Caption: [DREAM-1K](https://tarsier-vlm.github.io/), download from https://huggingface.co/datasets/omni-research/DREAM-1K.
 
-    We have preprocessed the metadata for all benchmarks we used, see: [data/annotations](https://github.com/bytedance/tarsier/tree/main/data/annotations) But you need to change the _"\<placeholder\>"_ in the annotation file to your local video file path according to the _"vid"_. We provide an [example code](https://github.com/bytedance/tarsier/blob/main/data/fill_in_video_file.ipynb) for processing DREAM-1K. You can refer to it when processing other benchmarks.
+  - Multi-choice VQA: [TVBench](https://paperswithcode.com/sota/video-question-answering-on-tvbench), download from https://huggingface.co/datasets/FunAILab/TVBench.
 
-2. Other Benchmarks
-    - Multi-choice VQA: [MVBench](https://huggingface.co/datasets/OpenGVLab/MVBench), [NeXT-QA](https://github.com/doc-doc/NExT-QA) and [Egoschema](https://drive.google.com/drive/folders/1SS0VVz8rML1e5gWq7D7VtP1oxE2UtmhQ)
-    - Open-ended VQA: [MSVD-QA](https://opendatalab.com/OpenDataLab/MSVD), [MSR-VTT-QA](https://opendatalab.com/OpenDataLab/MSR-VTT), [ActivityNet-QA](https://github.com/MILVLG/activitynet-qa) and [TGIF-QA](https://opendatalab.com/OpenDataLab/TGIF-QA)
-    - Video Caption: [MSVD-Caption](https://opendatalab.com/OpenDataLab/MSVD), [MSRVTT-Caption](https://opendatalab.com/OpenDataLab/MSR-VTT), [VATEX](https://eric-xw.github.io/vatex-website/about.html)
+2. Process to Tarsier2 data format
+
+    We have preprocessed the metadata for Tarsier2, see: [data/annotations](https://github.com/bytedance/tarsier/tree/tarsier2/data/annotations) But you need to change the _"\<placeholder\>"_ in the annotation file to your local video file path according to the _"vid"_. We provide an [example code](https://github.com/bytedance/tarsier/blob/tarsier2/data/fill_in_video_file.ipynb) for processing DREAM-1K and TVBench.
 
 ### Benchmark Inference and Evaluation
-Following command will firstly run in parallel to inference on the selected benchmarks (Edit the parameters in [scripts/run_inference_benchmark.sh](https://github.com/bytedance/tarsier/blob/main/scripts/run_inference_benchmark.sh): _"CHUNKS"_ and _"GPULIST"_ to customly control the parallelism), and then run evaluation.
+Following command will firstly run in parallel to inference on the selected benchmarks (Edit the parameters in [scripts/run_inference_benchmark.sh](https://github.com/bytedance/tarsier/blob/tarsier2/scripts/run_inference_benchmark.sh): _"CHUNKS"_ and _"GPULIST"_ to customly control the parallelism), and then run evaluation.
 ```bash
 model_name_or_path="path_to_the_model"
-output_dir="dream_predictions"
-benchmarks="dream" # Split benchmarks by space. Default as 'all' to inference on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); Or specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')
+output_dir="tarsier2_predictions"
+benchmarks="dream tvbench" # Split benchmarks by space. Default as 'all' to inference on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); Or specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')
 
 mkdir $output_dir
 
 bash scripts/run_inference_benchmark.sh $model_name_or_path $output_dir $benchmarks
 ```
 The evaluation results will be printed and saved in _$output_dir_.
+
+The result should be:
+```bash
+# Model: Tarsier2-Recap-7b
+## benchmark: dream
++-------------------------+----------+---------------+------------------+---------+--------+
+|           Task          | F1 Score | Action Recall | Action Precision | Success | Failed |
++-------------------------+----------+---------------+------------------+---------+--------+
+|  DREAM/movie_animation  |  0.364   |     0.355     |      0.374       |   200   |   0    |
+| DREAM/movie_live_action |  0.443   |     0.448     |      0.437       |   200   |   0    |
+|   DREAM/vertical_video  |  0.426   |     0.379     |      0.486       |   199   |   1    |
+|       DREAM/videvo      |  0.454   |     0.471     |      0.439       |   200   |   0    |
+|      DREAM/youtube      |  0.343   |     0.323     |      0.365       |   200   |   0    |
+|         OVERALL         |  0.407   |     0.395     |       0.42       |   999   |   1    |
++-------------------------+----------+---------------+------------------+---------+--------+
+
+## benchmark: tvbench
++---------+----------+---------+--------+
+|   Task  | Accuracy | Success | Failed |
++---------+----------+---------+--------+
+|    AA   |   91.2   |   320   |   0    |
+|    AC   |   43.1   |   536   |   0    |
+|    AL   |   42.5   |   160   |   0    |
+|    AS   |   70.5   |   437   |   0    |
+|    ES   |   22.0   |   200   |   0    |
+|    MD   |   37.1   |   232   |   0    |
+|    OC   |   46.6   |   148   |   0    |
+|    OS   |   36.9   |   225   |   0    |
+|    ST   |   85.9   |   185   |   0    |
+|    UA   |   28.0   |    82   |   0    |
+| OVERALL |   54.0   |   2525  |   0    |
++---------+----------+---------+--------+
+
+```
 
 ### Evaluation Only
 Run the following script to only calcluate the metrics for selected benchmarks.
