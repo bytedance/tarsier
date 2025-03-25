@@ -35,6 +35,7 @@ Benchmark2fname = {
     'mvbench': 'MVBench.jsonl',
     'tvbench': 'TVBench.jsonl',
     'video-mme': 'Video-MME.jsonl',
+    'favor-bench': 'FAVOR-Bench.jsonl',
 
     'msvd-qa': 'MSVD-QA-val.jsonl',
     'msr-vtt-qa': 'MSR-VTT-QA-val.jsonl',
@@ -122,7 +123,7 @@ def run_inference(args):
         cur_chunk = get_chunk(cur_anns, args.num_chunks, args.chunk_idx)
         all_chunks.extend(cur_chunk)
         print(f"### [{benchmark}] Load chunk with {len(cur_chunk)} samples from {len(cur_anns)} samples.")
-    print(f"###Finish loading chunk with {len(all_chunks)} samples from {count} samples in total.")
+    print(f"### Finish loading chunk with {len(all_chunks)} samples from {count} samples in total.")
 
     # Create the output directory if it doesn't exist
     if not os.path.exists(args.output_dir):
@@ -177,9 +178,11 @@ def run_inference(args):
                 print(f"Error: {e}")
                 output_text = "<error>"
             print(f"###Prediction:\n{output_text}", flush=True)
+            answer = ann['messages'][-1]['content'][-1]['reference']
+            print(f"###Answer:\n{answer}", flush=True)
             put_pred_to_data_dict(output_text, ann)
         else:
-            ann["text"]['prediction'] = "<error>"
+            put_pred_to_data_dict("<error>", ann)
         try:
             ans_file.write(json.dumps(ann, ensure_ascii=False) + "\n")
         except:
