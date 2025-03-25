@@ -214,7 +214,7 @@ Following command will firstly run in parallel to inference on the selected benc
 ```bash
 model_name_or_path="path_to_the_model"
 output_dir="tarsier2_predictions"
-benchmarks="dream tvbench" # Split benchmarks by space. Default as 'all' to inference on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); Or specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')
+benchmarks="dream tvbench favor-bench" # Split benchmarks by space. Default as 'all' to inference on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); Or specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa', 'favor-bench')
 
 mkdir $output_dir
 
@@ -225,7 +225,7 @@ The evaluation results will be printed and saved in _$output_dir_.
 The result should be:
 ```bash
 # Model: Tarsier2-Recap-7b
-## benchmark: dream
+## benchmark: dream (https://tarsier-vlm.github.io/), Top-2 behind Tarsier-7B.
 +-------------------------+----------+---------------+------------------+---------+--------+
 |           Task          | F1 Score | Action Recall | Action Precision | Success | Failed |
 +-------------------------+----------+---------------+------------------+---------+--------+
@@ -237,7 +237,7 @@ The result should be:
 |         OVERALL         |  0.407   |     0.395     |       0.42       |   999   |   1    |
 +-------------------------+----------+---------------+------------------+---------+--------+
 
-## benchmark: tvbench
+## benchmark: tvbench (https://paperswithcode.com/sota/video-question-answering-on-tvbench), Top-3 behind Tarsier-34B and Tarsier2-7B.
 +---------+----------+---------+--------+
 |   Task  | Accuracy | Success | Failed |
 +---------+----------+---------+--------+
@@ -254,6 +254,64 @@ The result should be:
 | OVERALL |   54.0   |   2525  |   0    |
 +---------+----------+---------+--------+
 
+## benchmark: favor-bench (https://favor-bench.github.io/), Top-3 behind Gemini-1.5-Pro and Qwen2.5-VL-72B.
++---------+----------+---------+--------+
+|   Task  | Accuracy | Success | Failed |
++---------+----------+---------+--------+
+|    AS   |   45.8   |   2637  |   0    |
+|    CM   |   35.8   |   1075  |   0    |
+|   HAC   |   55.8   |   1541  |   0    |
+|   MAD   |   52.9   |   1205  |   0    |
+|   NSM   |   43.8   |    64   |   0    |
+|   SAD   |   46.0   |   1662  |   0    |
+| OVERALL |   47.5   |   8184  |   0    |
++---------+----------+---------+--------+
+```
+
+For comparison, here are the results of Tarsier2-7B(-0115):
+```bash
+# Model: Tarsier2-7B
+## benchmark: dream (https://tarsier-vlm.github.io/), Top-1.
++-------------------------+----------+---------------+------------------+---------+--------+
+|           Task          | F1 Score | Action Recall | Action Precision | Success | Failed |
++-------------------------+----------+---------------+------------------+---------+--------+
+|  DREAM/movie_animation  |  0.398   |     0.412     |      0.384       |   200   |   0    |
+| DREAM/movie_live_action |  0.448   |     0.466     |      0.432       |   200   |   0    |
+|   DREAM/vertical_video  |  0.435   |     0.401     |      0.476       |   200   |   0    |
+|       DREAM/videvo      |  0.463   |     0.468     |      0.457       |   199   |   1    |
+|      DREAM/youtube      |  0.351   |     0.339     |      0.364       |   200   |   0    |
+|         OVERALL         |   0.42   |     0.417     |      0.423       |   999   |   1    |
++-------------------------+----------+---------------+------------------+---------+--------+
+
+## benchmark: tvbench (https://paperswithcode.com/sota/video-question-answering-on-tvbench), Top-2 behind Tarsier-34B.
++---------+----------+---------+--------+
+|   Task  | Accuracy | Success | Failed |
++---------+----------+---------+--------+
+|    AA   |   94.1   |   320   |   0    |
+|    AC   |   40.5   |   536   |   0    |
+|    AL   |   37.5   |   160   |   0    |
+|    AS   |   72.3   |   437   |   0    |
+|    ES   |   24.5   |   200   |   0    |
+|    MD   |   33.2   |   232   |   0    |
+|    OC   |   62.8   |   148   |   0    |
+|    OS   |   31.6   |   225   |   0    |
+|    ST   |   88.1   |   185   |   0    |
+|    UA   |   41.5   |    82   |   0    |
+| OVERALL |   54.7   |   2525  |   0    |
++---------+----------+---------+--------+
+
+## benchmark: favor-bench (https://favor-bench.github.io/), Top-1.
++---------+----------+---------+--------+
+|   Task  | Accuracy | Success | Failed |
++---------+----------+---------+--------+
+|    AS   |   50.4   |   2637  |   0    |
+|    CM   |   42.9   |   1075  |   0    |
+|   HAC   |   57.4   |   1541  |   0    |
+|   MAD   |   58.4   |   1205  |   0    |
+|   NSM   |   62.5   |    64   |   0    |
+|   SAD   |   51.4   |   1662  |   0    |
+| OVERALL |   52.2   |   8184  |   0    |
++---------+----------+---------+--------+
 ```
 
 ### Evaluation Only
