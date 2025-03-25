@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--pred_file', type=str)
-    parser.add_argument('--benchmarks', nargs='+', default=["all"], help="Default as 'all' to evaluate on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); And specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa')")
+    parser.add_argument('--benchmarks', nargs='+', default=["all"], help="Default as 'all' to evaluate on all benchmarks; Also could be task types: ('dream', 'caption', 'mc_qa', 'oe_qa'); And specific benchmark names: ('dream', 'msvd-caption', 'msr-vtt-caption', 'vatex-caption', 'next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa', 'favor-bench')")
     parser.add_argument('--sample_num', type=int, default=-1)
     parser.add_argument('--verbose', action='store_true')
 
@@ -124,6 +124,7 @@ if __name__ == '__main__':
         'mvbench': 'AccuracyMetric',
         'tvbench': 'AccuracyMetric',
         'video-mme': 'VideoMMEAccuracyMetric',
+        'favor-bench': 'AccuracyMetric',
 
         # Open-ended QA
         'msvd-qa': 'GPTMetric',
@@ -148,6 +149,7 @@ if __name__ == '__main__':
         'mvbench': 'MVBench',
         'tvbench': 'TVBench',
         'video-mme': 'Video-MME',
+        'favor-bench': 'FAVOR-Bench',
 
         'msvd-qa': 'MSVD-QA-val',
         'msr-vtt-qa': 'MSR-VTT-QA-val',

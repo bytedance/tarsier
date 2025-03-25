@@ -93,7 +93,7 @@ def run_inference(args):
     cur_chunk = get_chunk(cur_anns, args.num_chunks, args.chunk_idx)
     all_chunks.extend(cur_chunk)
     print(f"### Load chunk with {len(cur_chunk)} samples from {len(cur_anns)} samples.")
-    print(f"###Finish loading chunk with {len(all_chunks)} samples from {count} samples in total.")
+    print(f"### Finish loading chunk with {len(all_chunks)} samples from {count} samples in total.")
 
     # Create the output directory if it doesn't exist
     if not os.path.exists(args.output_dir):
