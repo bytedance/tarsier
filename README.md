@@ -201,13 +201,16 @@ A woman is sitting on a wooden floor with a gray exercise mat in front of her, w
 Here we provide the evaluation examples for Video Caption and Multi-choice VQA.
 ### Data Prepare
 1. Raw Dataset
-  - Video Caption: [DREAM-1K](https://tarsier-vlm.github.io/), download from https://huggingface.co/datasets/omni-research/DREAM-1K.
+  - Video Caption:
+    - [DREAM-1K](https://tarsier-vlm.github.io/), download from https://huggingface.co/datasets/omni-research/DREAM-1K.
 
-  - Multi-choice VQA: [TVBench](https://paperswithcode.com/sota/video-question-answering-on-tvbench), download from https://huggingface.co/datasets/FunAILab/TVBench.
+  - Multi-choice VQA: 
+    - [TVBench](https://paperswithcode.com/sota/video-question-answering-on-tvbench), download from https://huggingface.co/datasets/FunAILab/TVBench.
+    - [FAVOR-Bench](https://favor-bench.github.io), download from https://huggingface.co/datasets/zl2048/FAVOR.
 
 2. Process to Tarsier2 data format
 
-    We have preprocessed the metadata for Tarsier2, see: [data/annotations](https://github.com/bytedance/tarsier/tree/tarsier2/data/annotations) But you need to change the _"\<placeholder\>"_ in the annotation file to your local video file path according to the _"vid"_. We provide an [example code](https://github.com/bytedance/tarsier/blob/tarsier2/data/fill_in_video_file.ipynb) for processing DREAM-1K and TVBench.
+    We have preprocessed the metadata for Tarsier2, see: [data/annotations](https://github.com/bytedance/tarsier/tree/tarsier2/data/annotations) But you need to change the _"\<placeholder\>"_ in the annotation file to your local video file path according to the _"vid"_. We provide an [example code](https://github.com/bytedance/tarsier/blob/tarsier2/data/fill_in_video_file.ipynb) for processing DREAM-1K and TVBench. For FAVOR-Bench, _"vid"_ is the video filename.
 
 ### Benchmark Inference and Evaluation
 Following command will firstly run in parallel to inference on the selected benchmarks (Edit the parameters in [scripts/run_inference_benchmark.sh](https://github.com/bytedance/tarsier/blob/tarsier2/scripts/run_inference_benchmark.sh): _"CHUNKS"_ and _"GPULIST"_ to customly control the parallelism), and then run evaluation.
@@ -225,7 +228,7 @@ The evaluation results will be printed and saved in _$output_dir_.
 The result should be:
 ```bash
 # Model: Tarsier2-Recap-7b
-## benchmark: dream (https://tarsier-vlm.github.io/), Top-2 behind Tarsier-7B.
+## benchmark: dream, Top-2 behind Tarsier-7B.
 +-------------------------+----------+---------------+------------------+---------+--------+
 |           Task          | F1 Score | Action Recall | Action Precision | Success | Failed |
 +-------------------------+----------+---------------+------------------+---------+--------+
@@ -237,7 +240,7 @@ The result should be:
 |         OVERALL         |  0.407   |     0.395     |       0.42       |   999   |   1    |
 +-------------------------+----------+---------------+------------------+---------+--------+
 
-## benchmark: tvbench (https://paperswithcode.com/sota/video-question-answering-on-tvbench), Top-3 behind Tarsier-34B and Tarsier2-7B.
+## benchmark: tvbench, Top-3 behind Tarsier-34B and Tarsier2-7B.
 +---------+----------+---------+--------+
 |   Task  | Accuracy | Success | Failed |
 +---------+----------+---------+--------+
@@ -254,7 +257,7 @@ The result should be:
 | OVERALL |   54.0   |   2525  |   0    |
 +---------+----------+---------+--------+
 
-## benchmark: favor-bench (https://favor-bench.github.io/), Top-3 behind Gemini-1.5-Pro and Qwen2.5-VL-72B.
+## benchmark: favor-bench, Top-3 behind Gemini-1.5-Pro and Qwen2.5-VL-72B.
 +---------+----------+---------+--------+
 |   Task  | Accuracy | Success | Failed |
 +---------+----------+---------+--------+
@@ -271,7 +274,7 @@ The result should be:
 For comparison, here are the results of Tarsier2-7B(-0115):
 ```bash
 # Model: Tarsier2-7B
-## benchmark: dream (https://tarsier-vlm.github.io/), Top-1.
+## benchmark: dream, Top-1.
 +-------------------------+----------+---------------+------------------+---------+--------+
 |           Task          | F1 Score | Action Recall | Action Precision | Success | Failed |
 +-------------------------+----------+---------------+------------------+---------+--------+
@@ -283,7 +286,7 @@ For comparison, here are the results of Tarsier2-7B(-0115):
 |         OVERALL         |   0.42   |     0.417     |      0.423       |   999   |   1    |
 +-------------------------+----------+---------------+------------------+---------+--------+
 
-## benchmark: tvbench (https://paperswithcode.com/sota/video-question-answering-on-tvbench), Top-2 behind Tarsier-34B.
+## benchmark: tvbench, Top-2 behind Tarsier-34B.
 +---------+----------+---------+--------+
 |   Task  | Accuracy | Success | Failed |
 +---------+----------+---------+--------+
@@ -300,7 +303,7 @@ For comparison, here are the results of Tarsier2-7B(-0115):
 | OVERALL |   54.7   |   2525  |   0    |
 +---------+----------+---------+--------+
 
-## benchmark: favor-bench (https://favor-bench.github.io/), Top-1.
+## benchmark: favor-bench, Top-1.
 +---------+----------+---------+--------+
 |   Task  | Accuracy | Success | Failed |
 +---------+----------+---------+--------+
