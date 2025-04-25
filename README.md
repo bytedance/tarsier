@@ -53,7 +53,7 @@ of-the-art results across 16 public benchmarks, spanning tasks such as video cap
 
 - [2024/09/19] 🔥🚀 **[DREAM-1K Leaderboard](https://tarsier-vlm.github.io/)** is out! 20+ latest open-source or closed-source video understanding models are evaluted on the capacity of detailed video description on 1000 video clips of multiple-sources and multi-complexities. Check out the **[DREAM-1K Explorer](https://tarsier-vlm.github.io/explorer.html)** for the video clips and different model results.
 
-- [2024/07/04] 🔥 **Tarsier** is out! We released the model ([Tarsier-7b](https://huggingface.co/omni-research/Tarsier-7b)/[Tarsier-34b](https://huggingface.co/omni-research/Tarsier-34b)), [code](https://github.com/bytedance/tarsier/tree/main), and [data](https://huggingface.co/datasets/omni-research/DREAM-1K) for inference, evaluation and depolyment. Tarsier-34B gains **SOTA** results on 6 open video understanding benchmarks and _comparable capacity of detailed video description to Genmini 1.5 Pro_!
+- [2024/07/04] 🔥 **Tarsier** is out! We released the model ([Tarsier-7b](https://huggingface.co/omni-research/Tarsier-7b)/[Tarsier-34b](https://huggingface.co/omni-research/Tarsier-34b)), [code](https://github.com/bytedance/tarsier/tree/main), and [data](https://huggingface.co/datasets/omni-research/DREAM-1K) for inference, evaluation and deployment. Tarsier-34B gains **SOTA** results on 6 open video understanding benchmarks and _comparable capacity of detailed video description to Genmini 1.5 Pro_!
 
 # Perface
 Welcome to Tarsier!
@@ -63,7 +63,7 @@ In this repository, we introduce Tarsier -- a family of large-scale video-langua
 Besides the model, we propose a new video description benchmark called DREAM-1K (<b>D</b>escription
 with <b>R</b>ich <b>E</b>vents, <b>A</b>ctions, and <b>M</b>otions), featuring videos from diverse sources and varying complexity. AutoDQ (<b>Auto</b>matic <b>D</b>escription <b>Q</b>uality) is also introduced as a highly interpretable and discriminative approach to evaluate video description quality.
 
-We have released the model, code, and data for inference, evaluation and depolyment. We also provide an online demo for Tarsier2-7B:
+We have released the model, code, and data for inference, evaluation and deployment. We also provide an online demo for Tarsier2-7B:
 
 - Model:
 
