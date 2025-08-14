@@ -44,7 +44,7 @@ def init_model():
         print(f"No Valid GPU! Lauch in debug mode!")
         processor = init_processor(model_path, config_path)
         model = None
-    chat = Chat(model, processor, device, debug)c   
+    chat = Chat(model, processor, device, debug)
     print('Initialization Finished')
     return chat
 
