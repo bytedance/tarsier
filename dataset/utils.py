@@ -110,7 +110,7 @@ def get_benchmarks(benchmarks):
     type2bm = {
         'dream': ['dream'],
         'caption': ['msvd-caption', 'msr-vtt-caption', 'vatex-caption'],
-        'mc_qa': ['next-qa', 'egoschema', 'mvbench', 'video-mme'],
+        'mc_qa': ['next-qa', 'egoschema', 'mvbench', 'tvbench', 'video-mme', 'favor-bench'],
         'oe_qa': ['msvd-qa', 'msr-vtt-qa', 'tgif-qa', 'anet-qa'],
     }
     for bm in benchmarks:
