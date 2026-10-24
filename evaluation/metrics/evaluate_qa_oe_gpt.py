@@ -89,7 +89,7 @@ def try_call_api(question, answer, prediction, model, verbose=False):
 
 def process_one_sample(inputs):
     data, model, verbose = inputs
-    prompt, response, prediction = data['question'], data['response'].lower(), data['prediction'].lower()
+    prompt, response, prediction = data['prompt'], data['response'].lower(), data['prediction'].lower()
     result = None
     try:
         result, success = try_call_api(prompt, response, prediction, model, verbose)
